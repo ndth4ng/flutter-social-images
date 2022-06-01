@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:imagesio/screens/home/home.dart';
+import 'package:imagesio/screens/home/home_layout.dart';
 import 'package:imagesio/services/auth.dart';
 import 'package:imagesio/widgets/long_button.dart';
 
@@ -76,7 +76,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   @override
   Widget build(BuildContext context) {
     if (isEmailVerified) {
-      return const HomePage();
+      return const HomeLayoutPage();
     }
 
     return Scaffold(

@@ -6,7 +6,8 @@ import 'package:imagesio/screens/auth/first_open.dart';
 import 'package:imagesio/screens/auth/login.dart';
 import 'package:imagesio/screens/auth/register.dart';
 import 'package:imagesio/screens/auth/verify_email.dart';
-import 'package:imagesio/screens/home/home.dart';
+import 'package:imagesio/screens/home/home_layout.dart';
+
 // import 'package:imagesio/services/auth.dart';
 
 void main() async {
@@ -25,9 +26,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData(
           primarySwatch: Colors.blue,
+          backgroundColor: const Color(0xFFFEFEFE),
           fontFamily: 'Poppins',
         ),
         home: StreamBuilder<User?>(
@@ -42,7 +45,7 @@ class MyApp extends StatelessWidget {
         ),
         routes: {
           FirstOpen.routeName: (context) => const FirstOpen(),
-          HomePage.routeName: (context) => const HomePage(),
+          HomeLayoutPage.routeName: (context) => const HomeLayoutPage(),
           LoginPage.routeName: (context) => const LoginPage(),
           RegisterPage.routeName: (context) => const RegisterPage(),
         });
