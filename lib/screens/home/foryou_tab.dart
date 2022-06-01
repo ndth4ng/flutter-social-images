@@ -2,7 +2,9 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:imagesio/services/post.dart';
 import 'package:imagesio/widgets/category_list.dart';
+import 'package:imagesio/widgets/post_card.dart';
 
 class ForYouTab extends StatelessWidget {
   const ForYouTab({Key? key}) : super(key: key);
@@ -10,13 +12,7 @@ class ForYouTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Generate a list of dummy items
-    final List<Map<String, dynamic>> _items = List.generate(
-        200,
-        (index) => {
-              "id": index,
-              "title": "Item $index",
-              "height": Random().nextInt(150) + 50.5
-            });
+    final List<Map<String, dynamic>> _items = PostService().getDummyPosts;
 
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
@@ -36,25 +32,11 @@ class ForYouTab extends StatelessWidget {
                       // the number of columns
                       crossAxisCount: 2,
                       // vertical gap between two items
-                      mainAxisSpacing: 4,
+                      mainAxisSpacing: 2,
                       // horizontal gap between two items
-                      crossAxisSpacing: 4,
+                      crossAxisSpacing: 2,
                       itemBuilder: (context, index) {
-                        return Card(
-                          // Give each item a random background color
-                          color: Color.fromARGB(
-                              Random().nextInt(256),
-                              Random().nextInt(256),
-                              Random().nextInt(256),
-                              Random().nextInt(256)),
-                          key: ValueKey(_items[index]['id']),
-                          child: SizedBox(
-                            height: _items[index]['height'],
-                            child: Center(
-                              child: Text(_items[index]['title']),
-                            ),
-                          ),
-                        );
+                        return PostCard(item: _items[index]);
                       })
                 ],
               ),
