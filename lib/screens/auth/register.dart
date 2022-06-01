@@ -18,16 +18,30 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _obscureText = true;
 
   String email = '';
+  String username = '';
   String password = '';
   String confirmPassword = '';
 
   handleSignUp() async {
     if (_formKey.currentState!.validate()) {
-      AuthService().signUp(email: email, password: password).then((result) {
-        if (result == null) {
-          Navigator.pop(context);
-        }
-      });
+      if (await AuthService().checkUsername(username) == true) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Username is exist. Please choose another.',
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
+        );
+      } else {
+        AuthService()
+            .signUp(email: email, password: password, username: username)
+            .then((result) {
+          if (result == null) {
+            Navigator.pop(context);
+          }
+        });
+      }
     }
   }
 
@@ -40,14 +54,14 @@ class _RegisterPageState extends State<RegisterPage> {
             shrinkWrap: true,
             padding: const EdgeInsets.fromLTRB(32.0, 30.0, 32.0, 12.0),
             children: [
-              Row(
-                children: const [
-                  Image(
-                    image: AssetImage('assets/logo.png'),
-                    height: 70.0,
-                  ),
-                ],
-              ),
+              // Row(
+              //   children: const [
+              //     Image(
+              //       image: AssetImage('assets/logo.png'),
+              //       height: 70.0,
+              //     ),
+              //   ],
+              // ),
               const Text(
                 'Be a member of',
                 style: TextStyle(fontSize: 32.0, fontWeight: FontWeight.w100),
@@ -81,7 +95,25 @@ class _RegisterPageState extends State<RegisterPage> {
                         prefixIcon: const CustomPrefixIcon(icon: Icons.email),
                       ),
                     ),
-                    const SizedBox(height: 20.0),
+                    const SizedBox(height: 16.0),
+                    TextFormField(
+                      onChanged: (val) {
+                        setState(() => username = val);
+                      },
+                      validator: (String? val) {
+                        if (val != null && val.isEmpty) {
+                          return "Enter your username";
+                        }
+                        return null;
+                      },
+                      decoration: textInputDecoration.copyWith(
+                        labelText: "Username",
+                        hintText: "Enter your username",
+                        prefixIcon:
+                            const CustomPrefixIcon(icon: Icons.account_circle),
+                      ),
+                    ),
+                    const SizedBox(height: 16.0),
                     TextFormField(
                       obscureText: _obscureText,
                       onChanged: (val) {
@@ -113,7 +145,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20.0),
+                    const SizedBox(height: 16.0),
                     TextFormField(
                       obscureText: _obscureText,
                       onChanged: (val) {
@@ -148,7 +180,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20.0),
+                    const SizedBox(height: 24.0),
                     // if (_formKey.currentState!.validate()) {}
                     LongButton(text: 'Sign up', onPress: handleSignUp)
                   ],
