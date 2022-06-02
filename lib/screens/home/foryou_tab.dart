@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:imagesio/services/post.dart';
@@ -11,9 +9,6 @@ class ForYouTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Generate a list of dummy items
-    final List<Map<String, dynamic>> _items = PostService().getDummyPosts;
-
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       body: Column(
@@ -23,21 +18,33 @@ class ForYouTab extends StatelessWidget {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  MasonryGridView.count(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: _items.length,
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 10),
-                      // the number of columns
-                      crossAxisCount: 2,
-                      // vertical gap between two items
-                      mainAxisSpacing: 2,
-                      // horizontal gap between two items
-                      crossAxisSpacing: 2,
-                      itemBuilder: (context, index) {
-                        return PostCard(item: _items[index]);
-                      })
+                  FutureBuilder(
+                    future: PostService().getPosts(),
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const CircularProgressIndicator();
+                      }
+                      if (snapshot.hasData) {
+                        return MasonryGridView.count(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: snapshot.data.length,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 10),
+                          // the number of columns
+                          crossAxisCount: 2,
+                          // vertical gap between two items
+                          mainAxisSpacing: 8,
+                          // horizontal gap between two items
+                          crossAxisSpacing: 2,
+                          itemBuilder: (context, index) {
+                            return PostCard(post: snapshot.data[index]);
+                          },
+                        );
+                      }
+                      return Container();
+                    },
+                  )
                 ],
               ),
             ),

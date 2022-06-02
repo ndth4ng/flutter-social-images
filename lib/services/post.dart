@@ -1,66 +1,80 @@
-class PostService {
-  final List<Map<String, dynamic>> _items = [
-    {
-      "id": "1",
-      "title": "Item 1",
-      "image":
-          "https://images.pexels.com/photos/12194751/pexels-photo-12194751.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
-    },
-    {
-      "id": '2',
-      "title": "Item 2",
-      "image":
-          "https://images.pexels.com/photos/12070041/pexels-photo-12070041.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
-    },
-    {
-      "id": '3',
-      "title": "Item 3",
-      "image":
-          "https://images.pexels.com/photos/11491998/pexels-photo-11491998.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
-    },
-    {
-      "id": '4',
-      "title": "Item 4",
-      "image":
-          "https://images.pexels.com/photos/8930336/pexels-photo-8930336.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
-    },
-    {
-      "id": '5',
-      "title": "Item 5",
-      "image":
-          "https://images.pexels.com/photos/7760401/pexels-photo-7760401.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
-    },
-    {
-      "id": '6',
-      "title": "Item 6",
-      "image":
-          "https://images.pexels.com/photos/12004244/pexels-photo-12004244.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
-    },
-    {
-      "id": '7',
-      "title": "Item 7",
-      "image":
-          "https://images.pexels.com/photos/7326838/pexels-photo-7326838.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
-    },
-    {
-      "id": '8',
-      "title": "Item 8",
-      "image":
-          "https://images.pexels.com/photos/11183947/pexels-photo-11183947.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
-    },
-    {
-      "id": '9',
-      "title": "Item 9",
-      "image":
-          "https://images.pexels.com/photos/10187387/pexels-photo-10187387.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
-    },
-    {
-      "id": '10',
-      "title": "Item 10",
-      "image":
-          "https://images.pexels.com/photos/12070097/pexels-photo-12070097.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260"
-    },
-  ];
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:imagesio/models/author.dart';
+import 'package:imagesio/models/comment.dart';
+import 'package:imagesio/models/post.dart';
 
-  List<Map<String, dynamic>> get getDummyPosts => _items;
+class PostService with ChangeNotifier {
+  CollectionReference postsRef = FirebaseFirestore.instance.collection('posts');
+
+  Future<Post?> getPost(String postId) async {
+    try {
+      final ref = postsRef.doc(postId).withConverter(
+            fromFirestore: Post.fromFirestore,
+            toFirestore: (Post post, _) => post.toFirestore(),
+          );
+
+      final docSnap = await ref.get();
+      Post? post = docSnap.data();
+      if (post != null) {
+        post.comments = await getPostComments(postId);
+        return post;
+      } else {
+        print("No such document.");
+        return null;
+      }
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
+
+  Future<List<Post>> getPosts() async {
+    try {
+      QuerySnapshot querySnapshot = await postsRef.get();
+
+      List<Post> listPosts = querySnapshot.docs
+          .map((doc) => Post.fromJson(doc.data() as Map<String, dynamic>))
+          .toList();
+
+      // posts = listPosts;
+      return listPosts;
+    } catch (e) {
+      print(e.toString());
+      return [];
+    }
+  }
+
+  Future<List<Comment>> getPostComments(String postId) async {
+    try {
+      List<Comment> comments = [];
+
+      QuerySnapshot result =
+          await postsRef.doc(postId).collection('comments').get();
+
+      for (var comment in result.docs) {
+        Comment newComment =
+            Comment.fromJson(comment.data() as Map<String, dynamic>);
+        comments.add(newComment);
+      }
+
+      return comments;
+    } catch (e) {
+      print(e.toString());
+      return [];
+    }
+  }
+
+  Future<Author?> getPostAuthor(
+      DocumentReference<Map<String, dynamic>> userRef) async {
+    try {
+      DocumentSnapshot result = await userRef.get();
+      Author author = Author.fromJson(result.data() as Map<String, dynamic>);
+
+      return author;
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
 }
