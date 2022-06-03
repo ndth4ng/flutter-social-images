@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:imagesio/models/author.dart';
 import 'package:imagesio/models/post.dart';
+import 'package:imagesio/screens/post/comment_item.dart';
+import 'package:imagesio/screens/post/fullscreen_image.dart';
+
+import '../../widgets/draggable_line.dart';
 
 class PostPage extends StatefulWidget {
   static const routeName = '/post';
@@ -54,12 +58,19 @@ class _PostPageState extends State<PostPage> {
                             maxHeight: 450,
                             minWidth: MediaQuery.of(context).size.width,
                           ),
-                          child: Container(
-                            color: Colors.red,
+                          child: GestureDetector(
                             child: Image(
                               image: NetworkImage(post.imageUrl),
                               fit: BoxFit.cover,
                             ),
+                            onTap: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (_) {
+                                return FullScreenImage(
+                                  imageUrl: post.imageUrl,
+                                );
+                              }));
+                            },
                           ),
                         ),
                         Padding(
@@ -106,10 +117,26 @@ class _PostPageState extends State<PostPage> {
                                     const SizedBox(
                                       width: 4.0,
                                     ),
+
+                                    // Open Comment Sheet
                                     ElevatedButton(
-                                      onPressed: () => setState(() {
-                                        _currentTab = 1;
-                                      }),
+                                      onPressed: () {
+                                        setState(() {
+                                          _currentTab = 1;
+                                        });
+
+                                        showModalBottomSheet(
+                                          isScrollControlled: true,
+                                          backgroundColor: Colors.transparent,
+                                          context: context,
+                                          builder: (context) =>
+                                              buildCommentSheet(post, author),
+                                        ).whenComplete(
+                                          () => setState(() {
+                                            _currentTab = 0;
+                                          }),
+                                        );
+                                      },
                                       child: const Text('Comment'),
                                       style: ElevatedButton.styleFrom(
                                         primary: Colors.white.withOpacity(
@@ -146,6 +173,13 @@ class _PostPageState extends State<PostPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
+                          // Author
+                          const AuthorWidget(),
+
+                          const SizedBox(
+                            height: 10,
+                          ),
+
                           Container(
                             alignment: Alignment.center,
                             child: Text(
@@ -156,9 +190,11 @@ class _PostPageState extends State<PostPage> {
                               ),
                             ),
                           ),
+
                           const SizedBox(
                             height: 4.0,
                           ),
+
                           Container(
                             alignment: Alignment.centerLeft,
                             child: Text(
@@ -192,65 +228,256 @@ class _PostPageState extends State<PostPage> {
                   ],
                 ),
               ),
-
-              // Author
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        ClipRRect(
-                          borderRadius: const BorderRadius.all(
-                            Radius.circular(999),
-                          ),
-                          child: Image.network(
-                            'https://scontent.fsgn2-6.fna.fbcdn.net/v/t1.6435-9/32235283_112498146291756_1524370110523899904_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=D2XTKNlyqtkAX9BAeAn&_nc_ht=scontent.fsgn2-6.fna&oh=00_AT8MVS4Bz9yv0uUHNYiqnpBSg0-hkiNECjwi8n_9FTXiaQ&oe=62C00232',
-                            height: 50,
-                            fit: BoxFit.fill,
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 8.0,
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
-                            Text(
-                              'Huu Loc',
-                              style: TextStyle(
-                                fontSize: 12.0,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            Text(
-                              '@huuloc888',
-                              style: TextStyle(
-                                fontSize: 12.0,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    ElevatedButton(
-                      onPressed: () {},
-                      child: const Text('Follow'),
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(36),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              ReactionWidget(currentTab: _currentTab),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Widget makeDismissible({required Widget child}) => GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () => Navigator.of(context).pop(),
+        child: GestureDetector(
+          onTap: () {},
+          child: child,
+        ),
+      );
+
+  Widget buildCommentSheet(Post post, Author author) {
+    return makeDismissible(
+      child: DraggableScrollableSheet(
+        initialChildSize: 0.85,
+        minChildSize: 0.5,
+        maxChildSize: 0.85,
+        builder: (_, controller) => Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(36),
+            ),
+          ),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const DraggableLine(),
+              const SizedBox(
+                height: 10,
+              ),
+              Expanded(
+                child: ListView.builder(
+                  controller: controller,
+                  itemCount: post.comments.length,
+                  itemBuilder: (context, index) {
+                    return CommentItem(
+                        author: author, comment: post.comments[index]);
+                  },
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(
+                    top: 16, bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: const [
+                    Flexible(
+                      child: CommentInput(),
+                    ),
+                    SizedBox(
+                      width: 8.0,
+                    ),
+                    Icon(
+                      Icons.arrow_circle_right,
+                      size: 36.0,
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ReactionWidget extends StatelessWidget {
+  const ReactionWidget({
+    Key? key,
+    required int currentTab,
+  })  : _currentTab = currentTab,
+        super(key: key);
+
+  final int _currentTab;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        ElevatedButton.icon(
+          onPressed: () {},
+          icon: const Icon(Icons.heart_broken),
+          label: const Text('7.654'),
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            elevation: 0.0,
+            primary: Colors.grey[200],
+            onPrimary: Colors.black,
+            textStyle: TextStyle(
+                fontWeight:
+                    _currentTab == 0 ? FontWeight.w700 : FontWeight.normal),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(36),
+            ),
+          ),
+        ),
+        ElevatedButton.icon(
+          onPressed: () {},
+          icon: const Icon(
+            Icons.comment_rounded,
+            color: Colors.grey,
+          ),
+          label: const Text('5.687'),
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            elevation: 0.0,
+            primary: Colors.grey[200],
+            onPrimary: Colors.black,
+            textStyle: TextStyle(
+                fontWeight:
+                    _currentTab == 0 ? FontWeight.w700 : FontWeight.normal),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(36),
+            ),
+          ),
+        ),
+        ElevatedButton.icon(
+          onPressed: () => {},
+          icon: const Icon(
+            Icons.download,
+            color: Colors.grey,
+          ),
+          label: const Text('3.879'),
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            elevation: 0.0,
+            primary: Colors.grey[200],
+            onPrimary: Colors.black,
+            textStyle: TextStyle(
+                fontWeight:
+                    _currentTab == 0 ? FontWeight.w700 : FontWeight.normal),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(36),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class AuthorWidget extends StatelessWidget {
+  const AuthorWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Row(
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.all(
+                Radius.circular(999),
+              ),
+              child: Image.network(
+                'https://scontent.fsgn2-6.fna.fbcdn.net/v/t1.6435-9/32235283_112498146291756_1524370110523899904_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=D2XTKNlyqtkAX9BAeAn&_nc_ht=scontent.fsgn2-6.fna&oh=00_AT8MVS4Bz9yv0uUHNYiqnpBSg0-hkiNECjwi8n_9FTXiaQ&oe=62C00232',
+                height: 50,
+                fit: BoxFit.fill,
+              ),
+            ),
+            const SizedBox(
+              width: 8.0,
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  'Huu Loc',
+                  style: TextStyle(
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Text(
+                  '@huuloc888',
+                  style: TextStyle(
+                    fontSize: 12.0,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        ElevatedButton(
+          onPressed: () {},
+          child: const Text('Follow'),
+          style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(36),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class CommentInput extends StatelessWidget {
+  const CommentInput({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+        keyboardType: TextInputType.multiline,
+        maxLines: 4,
+        minLines: 1,
+        decoration: InputDecoration(
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+          fillColor: Colors.grey[200],
+          filled: true,
+          enabledBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(12.0),
+            ),
+            borderSide: BorderSide(
+              color: Colors.white,
+              width: 0.0,
+            ),
+          ),
+          focusedBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(12.0),
+            ),
+            borderSide: BorderSide(
+              color: Colors.blue,
+              width: 1.0,
+            ),
+          ),
+          hintStyle: const TextStyle(
+            fontSize: 12.0,
+            color: Colors.grey,
+          ),
+          isDense: true,
+        ));
   }
 }

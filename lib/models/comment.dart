@@ -1,6 +1,3 @@
-import 'dart:ffi';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:imagesio/models/reply.dart';
 
 class Comment {
