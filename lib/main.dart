@@ -9,6 +9,8 @@ import 'package:imagesio/screens/auth/register.dart';
 import 'package:imagesio/screens/auth/verify_email.dart';
 import 'package:imagesio/screens/home/home_layout.dart';
 import 'package:imagesio/screens/post/post_page.dart';
+import 'package:imagesio/services/post.dart';
+import 'package:provider/provider.dart';
 
 // import 'package:imagesio/services/auth.dart';
 
@@ -18,7 +20,12 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => PostService(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {

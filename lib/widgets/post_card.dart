@@ -23,7 +23,7 @@ class _PostCardState extends State<PostCard> {
       context,
       '/post',
       arguments: {
-        'post': widget.post,
+        'postId': widget.post.id,
         'author': author,
       },
     );
