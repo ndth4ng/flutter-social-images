@@ -18,13 +18,12 @@ class PostCard extends StatefulWidget {
 class _PostCardState extends State<PostCard> {
   void handleTap(DocumentReference<Map<String, dynamic>> userRef) async {
     Author? author = await PostService().getPostAuthor(userRef);
-    Post? newPost = await PostService().getPost(widget.post.id!);
 
     Navigator.pushNamed(
       context,
       '/post',
       arguments: {
-        'post': newPost,
+        'postId': widget.post.id,
         'author': author,
       },
     );

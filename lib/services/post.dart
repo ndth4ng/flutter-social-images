@@ -18,7 +18,7 @@ class PostService with ChangeNotifier {
       Post? post = docSnap.data();
       if (post != null) {
         List<Comment> listComments = await getPostComments(postId);
-        print('LIST COMMENTS: ${listComments.length}');
+        // print('LIST COMMENTS: ${listComments.length}');
         return post;
       } else {
         print("No such document.");

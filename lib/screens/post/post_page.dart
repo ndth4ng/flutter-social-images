@@ -1,8 +1,12 @@
+import 'dart:async';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:imagesio/models/author.dart';
 import 'package:imagesio/models/post.dart';
 import 'package:imagesio/screens/post/comment_item.dart';
 import 'package:imagesio/screens/post/fullscreen_image.dart';
+import 'package:imagesio/services/post.dart';
 
 import '../../widgets/draggable_line.dart';
 
@@ -20,217 +24,252 @@ class _PostPageState extends State<PostPage> {
   bool _seeMore = false;
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final arg = ModalRoute.of(context)!.settings.arguments as Map;
-    Post post = arg['post'];
+    String postId = arg['postId'];
     Author author = arg['author'];
 
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                clipBehavior: Clip.antiAlias,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).backgroundColor,
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(36),
-                  ),
-                  boxShadow: const [
-                    BoxShadow(
-                      blurRadius: 3.0,
-                      offset: Offset(0, 3.0),
-                      color: Colors.grey,
-                    ),
-                  ],
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
+          child: StreamBuilder(
+              stream: FirebaseFirestore.instance
+                  .collection('posts')
+                  .doc(postId)
+                  .snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<DocumentSnapshot> snapshot) {
+                if (snapshot.hasError) {
+                  return const Text('Something went wrong');
+                }
+
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Text("Loading");
+                }
+
+                var docsnap = snapshot.data;
+                Post post =
+                    Post.fromJson(docsnap?.data() as Map<String, dynamic>);
+                print(post.title);
+
+                return Column(
                   children: [
-                    Stack(
-                      alignment: Alignment.topCenter,
-                      children: [
-                        ConstrainedBox(
-                          constraints: BoxConstraints(
-                            maxHeight: 450,
-                            minWidth: MediaQuery.of(context).size.width,
-                          ),
-                          child: GestureDetector(
-                            child: Image(
-                              image: NetworkImage(post.imageUrl),
-                              fit: BoxFit.cover,
-                            ),
-                            onTap: () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (_) {
-                                return FullScreenImage(
-                                  imageUrl: post.imageUrl,
-                                );
-                              }));
-                            },
-                          ),
+                    Container(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      clipBehavior: Clip.antiAlias,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).backgroundColor,
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(36),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
+                        boxShadow: const [
+                          BoxShadow(
+                            blurRadius: 3.0,
+                            offset: Offset(0, 3.0),
+                            color: Colors.grey,
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Stack(
+                            alignment: Alignment.topCenter,
                             children: [
-                              IconButton(
-                                onPressed: () => Navigator.pop(context),
-                                color: Colors.white,
-                                icon: const Icon(Icons.arrow_back_ios_rounded),
-                                iconSize: 24.0,
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    vertical: 0.0, horizontal: 8.0),
-                                decoration: const BoxDecoration(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(24),
-                                  ),
-                                  color: Color.fromRGBO(38, 38, 38, 0.2),
+                              ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxHeight: 450,
+                                  minWidth: MediaQuery.of(context).size.width,
                                 ),
+                                child: GestureDetector(
+                                  child: Image(
+                                    image: NetworkImage(post.imageUrl),
+                                    fit: BoxFit.cover,
+                                  ),
+                                  onTap: () {
+                                    Navigator.push(context,
+                                        MaterialPageRoute(builder: (_) {
+                                      return FullScreenImage(
+                                        imageUrl: post.imageUrl,
+                                      );
+                                    }));
+                                  },
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
                                 child: Row(
                                   children: [
-                                    ElevatedButton(
-                                      onPressed: () => setState(() {
-                                        _currentTab = 0;
-                                      }),
-                                      child: const Text('Picture'),
-                                      style: ElevatedButton.styleFrom(
-                                        primary: Colors.white.withOpacity(
-                                            _currentTab == 0 ? 1 : 0.6),
-                                        onPrimary: Colors.black.withOpacity(
-                                            _currentTab == 0 ? 1 : 0.6),
-                                        textStyle: TextStyle(
-                                            fontWeight: _currentTab == 0
-                                                ? FontWeight.w700
-                                                : FontWeight.normal),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(36),
+                                    IconButton(
+                                      onPressed: () => Navigator.pop(context),
+                                      color: Colors.white,
+                                      icon: const Icon(
+                                          Icons.arrow_back_ios_rounded),
+                                      iconSize: 24.0,
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 0.0, horizontal: 8.0),
+                                      decoration: const BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(24),
                                         ),
+                                        color: Color.fromRGBO(38, 38, 38, 0.2),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          ElevatedButton(
+                                            onPressed: () => setState(() {
+                                              _currentTab = 0;
+                                            }),
+                                            child: const Text('Picture'),
+                                            style: ElevatedButton.styleFrom(
+                                              primary: Colors.white.withOpacity(
+                                                  _currentTab == 0 ? 1 : 0.6),
+                                              onPrimary: Colors.black
+                                                  .withOpacity(_currentTab == 0
+                                                      ? 1
+                                                      : 0.6),
+                                              textStyle: TextStyle(
+                                                  fontWeight: _currentTab == 0
+                                                      ? FontWeight.w700
+                                                      : FontWeight.normal),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(36),
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            width: 4.0,
+                                          ),
+
+                                          // Open Comment Sheet
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              setState(() {
+                                                _currentTab = 1;
+                                              });
+
+                                              showModalBottomSheet(
+                                                isScrollControlled: true,
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                context: context,
+                                                builder: (context) =>
+                                                    buildCommentSheet(
+                                                        post, author),
+                                              ).whenComplete(
+                                                () => setState(() {
+                                                  _currentTab = 0;
+                                                }),
+                                              );
+                                            },
+                                            child: const Text('Comment'),
+                                            style: ElevatedButton.styleFrom(
+                                              primary: Colors.white.withOpacity(
+                                                  _currentTab == 1 ? 1 : 0.6),
+                                              onPrimary: Colors.black
+                                                  .withOpacity(_currentTab == 1
+                                                      ? 1
+                                                      : 0.6),
+                                              textStyle: TextStyle(
+                                                  fontWeight: _currentTab == 1
+                                                      ? FontWeight.w700
+                                                      : FontWeight.normal),
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(36),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                    const SizedBox(
-                                      width: 4.0,
-                                    ),
-
-                                    // Open Comment Sheet
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        setState(() {
-                                          _currentTab = 1;
-                                        });
-
-                                        showModalBottomSheet(
-                                          isScrollControlled: true,
-                                          backgroundColor: Colors.transparent,
-                                          context: context,
-                                          builder: (context) =>
-                                              buildCommentSheet(post, author),
-                                        ).whenComplete(
-                                          () => setState(() {
-                                            _currentTab = 0;
-                                          }),
-                                        );
-                                      },
-                                      child: const Text('Comment'),
-                                      style: ElevatedButton.styleFrom(
-                                        primary: Colors.white.withOpacity(
-                                            _currentTab == 1 ? 1 : 0.6),
-                                        onPrimary: Colors.black.withOpacity(
-                                            _currentTab == 1 ? 1 : 0.6),
-                                        textStyle: TextStyle(
-                                            fontWeight: _currentTab == 1
-                                                ? FontWeight.w700
-                                                : FontWeight.normal),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(36),
-                                        ),
-                                      ),
+                                    IconButton(
+                                      onPressed: () {},
+                                      color: Colors.white,
+                                      icon: const Icon(Icons.more_horiz),
+                                      iconSize: 36.0,
                                     ),
                                   ],
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                 ),
                               ),
-                              IconButton(
-                                onPressed: () {},
-                                color: Colors.white,
-                                icon: const Icon(Icons.more_horiz),
-                                iconSize: 36.0,
-                              ),
                             ],
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           ),
-                        ),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          // Author
-                          const AuthorWidget(),
+                          Padding(
+                            padding:
+                                const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                // Author
+                                const AuthorWidget(),
 
-                          const SizedBox(
-                            height: 10,
-                          ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
 
-                          Container(
-                            alignment: Alignment.center,
-                            child: Text(
-                              post.title!,
-                              textAlign: TextAlign.left,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w700,
-                              ),
+                                Container(
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    post.title!,
+                                    textAlign: TextAlign.left,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                                  ),
+                                ),
+
+                                const SizedBox(
+                                  height: 4.0,
+                                ),
+
+                                Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    post.description!,
+                                    textAlign: TextAlign.left,
+                                    maxLines: _seeMore == false ? 4 : null,
+                                    overflow: _seeMore == false
+                                        ? TextOverflow.ellipsis
+                                        : null,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 16.0,
+                                ),
+                                Container(
+                                  alignment: Alignment.center,
+                                  child: InkWell(
+                                    onTap: () => setState(() {
+                                      _seeMore = !_seeMore;
+                                    }),
+                                    child: _seeMore == false
+                                        ? const Icon(Icons
+                                            .keyboard_double_arrow_down_rounded)
+                                        : const Icon(Icons
+                                            .keyboard_double_arrow_up_rounded),
+                                  ),
+                                )
+                              ],
                             ),
                           ),
-
-                          const SizedBox(
-                            height: 4.0,
-                          ),
-
-                          Container(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              post.description!,
-                              textAlign: TextAlign.left,
-                              maxLines: _seeMore == false ? 4 : null,
-                              overflow: _seeMore == false
-                                  ? TextOverflow.ellipsis
-                                  : null,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 16.0,
-                          ),
-                          Container(
-                            alignment: Alignment.center,
-                            child: InkWell(
-                              onTap: () => setState(() {
-                                _seeMore = !_seeMore;
-                              }),
-                              child: _seeMore == false
-                                  ? const Icon(
-                                      Icons.keyboard_double_arrow_down_rounded)
-                                  : const Icon(
-                                      Icons.keyboard_double_arrow_up_rounded),
-                            ),
-                          )
                         ],
                       ),
                     ),
+                    ReactionWidget(currentTab: _currentTab),
                   ],
-                ),
-              ),
-              ReactionWidget(currentTab: _currentTab),
-            ],
-          ),
+                );
+              }),
         ),
       ),
     );
