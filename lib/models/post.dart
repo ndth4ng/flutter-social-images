@@ -9,12 +9,14 @@ class Post {
     required this.imageUrl,
     required this.userRef,
     required this.comments,
+    this.likes,
   });
 
   final String? id, title, description;
   final String imageUrl;
   final DocumentReference<Map<String, dynamic>> userRef;
   List<Comment> comments;
+  List<DocumentReference>? likes;
 
   factory Post.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
@@ -39,6 +41,7 @@ class Post {
       description: json['description'],
       imageUrl: json['imageUrl'],
       comments: json['comments'] is Iterable ? List.from(json['comments']) : [],
+      likes: json['likes'] is Iterable ? List.from(json['likes']) : [],
       userRef: json['userRef'],
     );
   }
