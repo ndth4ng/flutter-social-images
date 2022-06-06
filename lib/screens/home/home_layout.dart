@@ -1,6 +1,6 @@
+import 'dart:developer';
 import 'dart:io';
 
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -10,8 +10,10 @@ import 'package:imagesio/screens/home_page.dart';
 import 'package:imagesio/screens/notification_page.dart';
 import 'package:imagesio/screens/profile_page.dart';
 import 'package:imagesio/screens/search_page.dart';
-import 'package:imagesio/services/auth.dart';
 import 'package:imagesio/widgets/tabbar_widget.dart';
+import 'package:path_provider/path_provider.dart';
+
+import 'package:path/path.dart';
 
 class HomeLayoutPage extends StatefulWidget {
   static const routeName = '/home';
@@ -23,25 +25,43 @@ class HomeLayoutPage extends StatefulWidget {
 
 class _HomeLayoutPageState extends State<HomeLayoutPage> {
   int _currentIndex = 0;
-  File? image;
 
   final pages = <Widget>[
-    HomePage(),
-    SearchPage(),
-    NotificationPage(),
-    ProfilePage(),
+    const HomePage(),
+    const SearchPage(),
+    const NotificationPage(),
+    const ProfilePage(),
   ];
 
   @override
   Widget build(BuildContext context) {
+    Future<File> saveImagePermanently(String imagePath) async {
+      final directory = await getApplicationDocumentsDirectory();
+      final name = basename(imagePath);
+      final image = File('${directory.path}/$name');
+
+      image.writeAsBytes(File(imagePath).readAsBytesSync());
+
+      return File(imagePath).copy(image.path);
+      // return image;
+    }
+
     Future getImage(ImageSource source) async {
       try {
-        final image = await ImagePicker().pickImage(source: source);
+        final picker = ImagePicker();
+        final XFile? image = await picker.pickImage(source: source);
 
         if (image == null) return;
 
-        final imageTemporary = File(image.path);
-        this.image = imageTemporary;
+        // final imageTemporary = File(image.path);
+
+        final imagePermanent = await saveImagePermanently(image.path);
+
+        // print(imageTemporary);
+
+        Navigator.pushNamed(context, 'add-post', arguments: {
+          'image': imagePermanent,
+        });
       } on PlatformException catch (e) {
         print('Failed to pick image: $e');
       }
