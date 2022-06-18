@@ -1,15 +1,33 @@
-class Author {
-  final String uid;
-  final String username;
-  final String email;
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-  Author({required this.uid, required this.email, required this.username});
+class Author {
+  final String uid, email, avatar;
+  String? displayName, username;
+  List<DocumentReference>? followers, followings;
+  List<dynamic>? notifications;
+
+  Author(
+      {required this.uid,
+      required this.email,
+      required this.avatar,
+      this.username,
+      this.displayName,
+      this.followers,
+      this.followings,
+      this.notifications});
 
   factory Author.fromJson(Map<String, dynamic> json) {
     return Author(
       uid: json['uid'],
       username: json['username'],
       email: json['email'],
+      avatar: json['avatar'],
+      displayName: json['displayName'],
+      followers:
+          json['followers'] is Iterable ? List.from(json['followers']) : [],
+      followings:
+          json['followings'] is Iterable ? List.from(json['followings']) : [],
+      // notifications: json['notifications'],
     );
   }
 }

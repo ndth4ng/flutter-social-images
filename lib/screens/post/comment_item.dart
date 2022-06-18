@@ -1,49 +1,89 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:imagesio/models/author.dart';
 import 'package:imagesio/models/comment.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class CommentItem extends StatelessWidget {
-  final Author author;
   final Comment comment;
   const CommentItem({
     Key? key,
-    required this.author,
     required this.comment,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.all(
-              Radius.circular(999),
-            ),
-            child: Image.network(
-              'https://scontent.fsgn2-6.fna.fbcdn.net/v/t1.6435-9/32235283_112498146291756_1524370110523899904_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=D2XTKNlyqtkAX9BAeAn&_nc_ht=scontent.fsgn2-6.fna&oh=00_AT8MVS4Bz9yv0uUHNYiqnpBSg0-hkiNECjwi8n_9FTXiaQ&oe=62C00232',
-              height: 40,
-              fit: BoxFit.fill,
-            ),
-          ),
-          const SizedBox(
-            width: 8.0,
-          ),
-          Text.rich(
-            TextSpan(
+    return StreamBuilder(
+      stream: FirebaseFirestore.instance
+          .collection('users')
+          .doc(comment.userRef.id)
+          .snapshots(),
+      builder:
+          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return const Center(child: Text('Something went wrong'));
+        }
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        } else {
+          Author author =
+              Author.fromJson(snapshot.data!.data() as Map<String, dynamic>);
+
+          final time = DateTime.fromMillisecondsSinceEpoch(comment.createdAt);
+
+          return Container(
+            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0.0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TextSpan(
-                  text: '${author.username}: ',
-                  style: const TextStyle(fontWeight: FontWeight.w700),
+                ClipRRect(
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(999),
+                  ),
+                  child: Image.network(
+                    author.avatar,
+                    height: 40,
+                    width: 40,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-                TextSpan(text: comment.content),
+                const SizedBox(
+                  width: 8.0,
+                ),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text:
+                                  '${author.displayName ?? author.username}: ',
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                            TextSpan(text: comment.content),
+                          ],
+                        ),
+                      ),
+
+                      // Created At
+                      Text(
+                        timeago.format(time, locale: 'en'),
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ],
+                  ),
+                )
               ],
             ),
-          )
-        ],
-      ),
+          );
+        }
+      },
     );
   }
 }

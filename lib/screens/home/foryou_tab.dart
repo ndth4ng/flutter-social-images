@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:imagesio/models/author.dart';
+import 'package:imagesio/services/auth.dart';
 import 'package:imagesio/services/post.dart';
 import 'package:imagesio/widgets/category_list.dart';
 import 'package:imagesio/widgets/post_card.dart';
+import 'package:provider/provider.dart';
 
 class ForYouTab extends StatelessWidget {
   const ForYouTab({Key? key}) : super(key: key);
@@ -28,7 +31,7 @@ class ForYouTab extends StatelessWidget {
                         return MasonryGridView.count(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          itemCount: snapshot.data.length,
+                          itemCount: 10,
                           padding: const EdgeInsets.symmetric(
                               vertical: 10, horizontal: 10),
                           // the number of columns

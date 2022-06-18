@@ -1,10 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:imagesio/models/author.dart';
 import 'package:imagesio/models/comment.dart';
 import 'package:imagesio/models/post.dart';
 import 'package:imagesio/screens/post/comment_item.dart';
+import 'package:imagesio/screens/post/comment_page.dart';
+import 'package:imagesio/screens/post/comment_section.dart';
 import 'package:imagesio/screens/post/fullscreen_image.dart';
+import 'package:imagesio/services/post.dart';
+import 'package:provider/provider.dart';
 
 import '../../widgets/draggable_line.dart';
 
@@ -23,6 +28,7 @@ class _PostPageState extends State<PostPage> {
     final arg = ModalRoute.of(context)!.settings.arguments as Map;
     String postId = arg['postId'];
     Author author = arg['author'];
+
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       body: SafeArea(
@@ -35,23 +41,23 @@ class _PostPageState extends State<PostPage> {
               builder: (BuildContext context,
                   AsyncSnapshot<DocumentSnapshot> snapshot) {
                 if (snapshot.hasError) {
-                  return const Text('Something went wrong');
+                  return const Center(child: Text('Something went wrong'));
                 }
 
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Text("Loading");
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
                 }
 
                 var docsnap = snapshot.data;
                 Post post =
                     Post.fromJson(docsnap?.data() as Map<String, dynamic>);
 
-                print(post.likes?.length);
-
                 return Column(
                   children: [
                     Container(
-                      padding: const EdgeInsets.only(bottom: 16.0),
+                      padding: const EdgeInsets.only(bottom: 8.0),
                       clipBehavior: Clip.antiAlias,
                       decoration: BoxDecoration(
                         color: Theme.of(context).backgroundColor,
@@ -92,14 +98,15 @@ class _PostPageState extends State<PostPage> {
                                   },
                                 ),
                               ),
-                              TopBarAction(author: author, post: post)
+                              TopBarAction(postId: post.id)
                             ],
                           ),
-                          PostContent(post: post)
+                          AuthorWidget(author: author),
+                          PostContent(post: post),
+                          ReactionWidget(post: post),
                         ],
                       ),
                     ),
-                    ReactionWidget(post: post),
                   ],
                 );
               }),
@@ -109,62 +116,180 @@ class _PostPageState extends State<PostPage> {
   }
 }
 
-class ReactionWidget extends StatelessWidget {
+class ReactionWidget extends StatefulWidget {
   final Post post;
   const ReactionWidget({Key? key, required this.post}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    int postLikes = post.likes != null ? post.likes!.length : 0;
+  State<ReactionWidget> createState() => _ReactionWidgetState();
+}
 
-    return Container(
-      padding: const EdgeInsets.all(8.0),
+class _ReactionWidgetState extends State<ReactionWidget> {
+  bool isOpenComment = false;
+  @override
+  Widget build(BuildContext context) {
+    User? currentUser = Provider.of<User?>(context);
+    int likesCount = widget.post.likes != null ? widget.post.likes!.length : 0;
+
+    // Check if user is liked this post
+    bool? isLiked = false;
+
+    if (widget.post.likes
+            ?.map((DocumentReference userRef) {
+              return userRef.id;
+            })
+            .toList()
+            .contains(currentUser?.uid) ==
+        true) {
+      setState(() {
+        isLiked = true;
+      });
+    }
+
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 24.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    PostService().likePost(widget.post, currentUser!.uid);
+                  },
+                  icon: Icon(Icons.favorite,
+                      color: isLiked == true ? Colors.red : Colors.grey),
+                  label: Text(likesCount.toString()),
+                  style: ElevatedButton.styleFrom(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    elevation: 0.0,
+                    primary: Colors.grey[200],
+                    onPrimary: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(36),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8.0),
+              StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection('posts')
+                      .doc(widget.post.id)
+                      .collection('comments')
+                      .snapshots(),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    return Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          setState(() {
+                            isOpenComment = !isOpenComment;
+                          });
+                        },
+                        icon: const Icon(
+                          Icons.comment_rounded,
+                          color: Colors.grey,
+                        ),
+                        label: Text(snapshot.hasData
+                            ? snapshot.data.docs.length.toString()
+                            : '0'),
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          elevation: 0.0,
+                          primary: Colors.grey[200],
+                          onPrimary: Colors.black,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(36),
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
+              const SizedBox(width: 8.0),
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: () => {},
+                  icon: const Icon(
+                    Icons.download,
+                    color: Colors.grey,
+                  ),
+                  label: const Text('3.879'),
+                  style: ElevatedButton.styleFrom(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    elevation: 0.0,
+                    primary: Colors.grey[200],
+                    onPrimary: Colors.black,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(36),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (isOpenComment) CommentSection(postId: widget.post.id)
+      ],
+    );
+  }
+}
+
+class AuthorWidget extends StatelessWidget {
+  final Author author;
+  const AuthorWidget({Key? key, required this.author}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          ElevatedButton.icon(
-            onPressed: () {},
-            icon: const Icon(Icons.heart_broken),
-            label: Text(postLikes.toString()),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              elevation: 0.0,
-              primary: Colors.grey[200],
-              onPrimary: Colors.black,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(36),
+          Row(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(999),
+                ),
+                child: Image.network(
+                  author.avatar,
+                  height: 50,
+                  width: 50,
+                  fit: BoxFit.cover,
+                ),
               ),
-            ),
-          ),
-          ElevatedButton.icon(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.comment_rounded,
-              color: Colors.grey,
-            ),
-            label: const Text('5.687'),
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              elevation: 0.0,
-              primary: Colors.grey[200],
-              onPrimary: Colors.black,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(36),
+              const SizedBox(
+                width: 8.0,
               ),
-            ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    author.displayName ?? author.username!,
+                    style: const TextStyle(
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  Text(
+                    author.username!,
+                    style: const TextStyle(
+                      fontSize: 12.0,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          ElevatedButton.icon(
-            onPressed: () => {},
-            icon: const Icon(
-              Icons.download,
-              color: Colors.grey,
-            ),
-            label: const Text('3.879'),
+          ElevatedButton(
+            onPressed: () {},
+            child: const Text('Follow'),
             style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              elevation: 0.0,
-              primary: Colors.grey[200],
-              onPrimary: Colors.black,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(36),
               ),
@@ -176,75 +301,23 @@ class ReactionWidget extends StatelessWidget {
   }
 }
 
-class AuthorWidget extends StatelessWidget {
-  const AuthorWidget({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.all(
-                Radius.circular(999),
-              ),
-              child: Image.network(
-                'https://scontent.fsgn2-6.fna.fbcdn.net/v/t1.6435-9/32235283_112498146291756_1524370110523899904_n.jpg?_nc_cat=111&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=D2XTKNlyqtkAX9BAeAn&_nc_ht=scontent.fsgn2-6.fna&oh=00_AT8MVS4Bz9yv0uUHNYiqnpBSg0-hkiNECjwi8n_9FTXiaQ&oe=62C00232',
-                height: 50,
-                fit: BoxFit.fill,
-              ),
-            ),
-            const SizedBox(
-              width: 8.0,
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
-                  'Huu Loc',
-                  style: TextStyle(
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-                Text(
-                  '@huuloc888',
-                  style: TextStyle(
-                    fontSize: 12.0,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        ElevatedButton(
-          onPressed: () {},
-          child: const Text('Follow'),
-          style: ElevatedButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(36),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class CommentInput extends StatelessWidget {
+class CommentInput extends StatefulWidget {
   const CommentInput({
     Key? key,
   }) : super(key: key);
 
   @override
+  State<CommentInput> createState() => _CommentInputState();
+}
+
+class _CommentInputState extends State<CommentInput> {
+  TextEditingController controller = TextEditingController();
+
+  @override
   Widget build(BuildContext context) {
     return TextField(
-        keyboardType: TextInputType.multiline,
+        // keyboardType: TextInputType.none,
+        controller: controller,
         maxLines: 4,
         minLines: 1,
         decoration: InputDecoration(
@@ -280,10 +353,9 @@ class CommentInput extends StatelessWidget {
 }
 
 class TopBarAction extends StatefulWidget {
-  final Post post;
-  final Author author;
-  const TopBarAction({Key? key, required this.author, required this.post})
-      : super(key: key);
+  final String postId;
+
+  const TopBarAction({Key? key, required this.postId}) : super(key: key);
 
   @override
   State<TopBarAction> createState() => _TopBarActionState();
@@ -344,17 +416,22 @@ class _TopBarActionState extends State<TopBarAction> {
                       _currentTab = 1;
                     });
 
-                    showModalBottomSheet(
-                      isScrollControlled: true,
-                      backgroundColor: Colors.transparent,
-                      context: context,
-                      builder: (context) =>
-                          buildCommentSheet(widget.post, widget.author),
-                    ).whenComplete(
-                      () => setState(() {
-                        _currentTab = 0;
-                      }),
-                    );
+                    // Navigator.pushNamed(context, 'comment',
+                    //     arguments: {'postId': widget.postId}).whenComplete(
+                    //   () => () => setState(() {
+                    //         _currentTab = 0;
+                    //       }),
+                    // );
+                    // showModalBottomSheet(
+                    //   isScrollControlled: true,
+                    //   backgroundColor: Colors.transparent,
+                    //   context: context,
+                    //   builder: (context) => CommentSheet(postId: widget.postId),
+                    // ).whenComplete(
+                    //   () => setState(() {
+                    //     _currentTab = 0;
+                    //   }),
+                    // );
                   },
                   child: const Text('Comment'),
                   style: ElevatedButton.styleFrom(
@@ -385,18 +462,43 @@ class _TopBarActionState extends State<TopBarAction> {
       ),
     );
   }
+}
 
-  Widget makeDismissible({required Widget child}) => GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () => Navigator.of(context).pop(),
-        child: GestureDetector(
-          onTap: () {},
-          child: child,
-        ),
-      );
+class MakeDismissible extends StatelessWidget {
+  final Widget child;
+  const MakeDismissible({Key? key, required this.child}) : super(key: key);
 
-  Widget buildCommentSheet(Post post, Author author) {
-    return makeDismissible(
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => Navigator.of(context).pop(),
+      child: GestureDetector(
+        onTap: () {},
+        child: child,
+      ),
+    );
+  }
+}
+
+class CommentSheet extends StatefulWidget {
+  final String postId;
+  const CommentSheet({Key? key, required this.postId}) : super(key: key);
+
+  @override
+  State<CommentSheet> createState() => _CommentSheetState();
+}
+
+class _CommentSheetState extends State<CommentSheet> {
+  @override
+  Widget build(BuildContext context) {
+    Stream<QuerySnapshot<Map<String, dynamic>>> dataStream = FirebaseFirestore
+        .instance
+        .collection('posts')
+        .doc(widget.postId)
+        .collection('comments')
+        .snapshots();
+    return MakeDismissible(
       child: DraggableScrollableSheet(
         initialChildSize: 0.85,
         minChildSize: 0.5,
@@ -418,11 +520,7 @@ class _TopBarActionState extends State<TopBarAction> {
               ),
               Expanded(
                 child: StreamBuilder(
-                  stream: FirebaseFirestore.instance
-                      .collection('posts')
-                      .doc(post.id)
-                      .collection('comments')
-                      .snapshots(),
+                  stream: dataStream,
                   builder: (BuildContext context,
                       AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (snapshot.hasError) {
@@ -435,19 +533,20 @@ class _TopBarActionState extends State<TopBarAction> {
                       );
                     }
 
-                    List<Comment> listComments = [];
-                    for (DocumentSnapshot document in snapshot.data!.docs) {
-                      Comment comment = Comment.fromJson(
-                          document.data()! as Map<String, dynamic>);
-                      listComments.add(comment);
+                    if (snapshot.hasData) {
+                      List<Comment> listComments = [];
+
+                      for (var docSnap in snapshot.data!.docs) {
+                        Comment comment = Comment.fromJson(
+                            docSnap.data() as Map<String, dynamic>);
+                        listComments.add(comment);
+                      }
+
+                      return CommentListView(listComments: listComments);
                     }
 
-                    return ListView.builder(
-                      itemCount: listComments.length,
-                      itemBuilder: (context, index) {
-                        return CommentItem(
-                            author: author, comment: listComments[index]);
-                      },
+                    return const Center(
+                      child: CircularProgressIndicator(),
                     );
                   },
                 ),
@@ -479,6 +578,25 @@ class _TopBarActionState extends State<TopBarAction> {
   }
 }
 
+class CommentListView extends StatelessWidget {
+  const CommentListView({
+    Key? key,
+    required this.listComments,
+  }) : super(key: key);
+
+  final List<Comment> listComments;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: listComments.length,
+      itemBuilder: (context, index) {
+        return CommentItem(comment: listComments[index]);
+      },
+    );
+  }
+}
+
 class PostContent extends StatefulWidget {
   final Post post;
   const PostContent({Key? key, required this.post}) : super(key: key);
@@ -489,6 +607,7 @@ class PostContent extends StatefulWidget {
 
 class _PostContentState extends State<PostContent> {
   bool _seeMore = false;
+  static const defaultLines = 4;
 
   @override
   Widget build(BuildContext context) {
@@ -497,51 +616,66 @@ class _PostContentState extends State<PostContent> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Author
-          const AuthorWidget(),
-
-          const SizedBox(
-            height: 10,
-          ),
-
           Container(
             alignment: Alignment.center,
             child: Text(
-              widget.post.title!,
+              widget.post.title,
               textAlign: TextAlign.left,
               style: const TextStyle(
                 fontWeight: FontWeight.w700,
               ),
             ),
           ),
-
           const SizedBox(
             height: 4.0,
           ),
+          LayoutBuilder(builder: (context, size) {
+            final span = TextSpan(text: widget.post.description);
+            final tp = TextPainter(
+                text: span,
+                textDirection: TextDirection.ltr,
+                maxLines: defaultLines);
+            tp.layout(maxWidth: size.maxWidth);
 
-          Container(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              widget.post.description!,
-              textAlign: TextAlign.left,
-              maxLines: _seeMore == false ? 4 : null,
-              overflow: _seeMore == false ? TextOverflow.ellipsis : null,
-            ),
-          ),
-          const SizedBox(
-            height: 16.0,
-          ),
-          Container(
-            alignment: Alignment.center,
-            child: InkWell(
-              onTap: () => setState(() {
-                _seeMore = !_seeMore;
-              }),
-              child: _seeMore == false
-                  ? const Icon(Icons.keyboard_double_arrow_down_rounded)
-                  : const Icon(Icons.keyboard_double_arrow_up_rounded),
-            ),
-          )
+            if (tp.didExceedMaxLines) {
+              return Column(
+                children: [
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      widget.post.description,
+                      textAlign: TextAlign.left,
+                      maxLines: _seeMore == false ? defaultLines : null,
+                      overflow:
+                          _seeMore == false ? TextOverflow.ellipsis : null,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 8.0,
+                  ),
+                  Container(
+                    alignment: Alignment.center,
+                    child: InkWell(
+                      onTap: () => setState(() {
+                        _seeMore = !_seeMore;
+                      }),
+                      child: _seeMore == false
+                          ? const Icon(Icons.keyboard_double_arrow_down_rounded)
+                          : const Icon(Icons.keyboard_double_arrow_up_rounded),
+                    ),
+                  )
+                ],
+              );
+            } else {
+              return Container(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  widget.post.description,
+                  textAlign: TextAlign.left,
+                ),
+              );
+            }
+          })
         ],
       ),
     );
