@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:imagesio/models/author.dart';
 import 'package:imagesio/models/comment.dart';
 
 class Post {
@@ -7,16 +8,25 @@ class Post {
     required this.title,
     required this.description,
     required this.imageUrl,
+    this.imageId,
     required this.userRef,
-    required this.comments,
+    this.keywords,
+    required this.createdAt,
+    this.comments,
     this.likes,
+    this.author,
   });
 
-  final String? id, title, description;
-  final String imageUrl;
-  final DocumentReference<Map<String, dynamic>> userRef;
-  List<Comment> comments;
+  final String id, title, description, imageUrl;
+  String? imageId;
+  int createdAt;
+  final DocumentReference userRef;
+  final List<String>? keywords;
+
+  List<Comment>? comments;
   List<DocumentReference>? likes;
+
+  Author? author;
 
   factory Post.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> snapshot,
@@ -28,6 +38,11 @@ class Post {
       title: data?['title'],
       description: data?['description'],
       imageUrl: data?['imageUrl'],
+      imageId: data?['imageId'],
+      createdAt: data?['createdAt'],
+      likes: data?['likes'] is Iterable ? List.from(data?['likes']) : [],
+      keywords:
+          data?['keywords'] is Iterable ? List.from(data?['keywords']) : [],
       comments:
           data?['comments'] is Iterable ? List.from(data?['comments']) : [],
       userRef: data?['userRef'],
@@ -37,11 +52,14 @@ class Post {
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
       id: json['id'],
-      title: json['title'],
-      description: json['description'],
+      title: json['title'] ?? '',
+      description: json['description'] ?? '',
       imageUrl: json['imageUrl'],
-      comments: json['comments'] is Iterable ? List.from(json['comments']) : [],
+      imageId: json['imageId'] ?? '',
+      createdAt: json['createdAt'],
       likes: json['likes'] is Iterable ? List.from(json['likes']) : [],
+      keywords: json['keywords'] is Iterable ? List.from(json['keywords']) : [],
+      // comments: json['comments'] is Iterable ? List.from(json['comments']) : [],
       userRef: json['userRef'],
     );
   }

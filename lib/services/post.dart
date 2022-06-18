@@ -9,21 +9,14 @@ class PostService with ChangeNotifier {
 
   Future<Post?> getPost(String postId) async {
     try {
-      final ref = postsRef.doc(postId).withConverter(
-            fromFirestore: Post.fromFirestore,
-            toFirestore: (Post post, _) => post.toFirestore(),
-          );
+      DocumentSnapshot docSnapshot = await postsRef.doc(postId).get();
 
-      final docSnap = await ref.get();
-      Post? post = docSnap.data();
-      if (post != null) {
-        List<Comment> listComments = await getPostComments(postId);
-        // print('LIST COMMENTS: ${listComments.length}');
-        return post;
-      } else {
-        print("No such document.");
-        return null;
-      }
+      Post post = docSnapshot.data() as Post;
+
+      // print(docSnapshot.data().toString());
+
+      // List<Comment> listComments = await getPostComments(postId);
+      return post;
     } catch (e) {
       print(e.toString());
       return null;
@@ -37,7 +30,6 @@ class PostService with ChangeNotifier {
       List<Post> listPosts = querySnapshot.docs
           .map((doc) => Post.fromJson(doc.data() as Map<String, dynamic>))
           .toList();
-
       // posts = listPosts;
       return listPosts;
     } catch (e) {
@@ -66,8 +58,7 @@ class PostService with ChangeNotifier {
     }
   }
 
-  Future<Author?> getPostAuthor(
-      DocumentReference<Map<String, dynamic>> userRef) async {
+  Future<Author?> getPostAuthor(DocumentReference userRef) async {
     try {
       DocumentSnapshot result = await userRef.get();
       Author author = Author.fromJson(result.data() as Map<String, dynamic>);
@@ -77,5 +68,31 @@ class PostService with ChangeNotifier {
       print(e.toString());
       return null;
     }
+  }
+
+  void likePost(Post post, String uid) async {
+    List<DocumentReference> postLikes = post.likes ?? [];
+
+    //Create userRef
+    DocumentReference userRef =
+        FirebaseFirestore.instance.collection('users').doc(uid);
+
+    // Check if user is already liked this post
+    bool isLiked = postLikes
+        .map((DocumentReference userRef) => userRef.id)
+        .toList()
+        .contains(uid);
+
+    if (isLiked) {
+      final index = postLikes.indexWhere((userRef) => userRef.id == uid);
+      postLikes.removeAt(index);
+    } else {
+      postLikes.add(userRef);
+    }
+
+    FirebaseFirestore.instance
+        .collection('posts')
+        .doc(post.id)
+        .update({'likes': postLikes});
   }
 }

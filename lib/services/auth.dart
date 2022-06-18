@@ -2,12 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthService {
-  String _message = 'You are not sign in';
-
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   User? get user => _auth.currentUser;
+
+  Stream<User?> get firebaseUser {
+    return _auth.authStateChanges().map((User? firebaseUser) => firebaseUser);
+  }
 
 // Sign up
   Future signUp(
