@@ -35,6 +35,8 @@ class _HomeLayoutPageState extends State<HomeLayoutPage> {
 
   @override
   Widget build(BuildContext context) {
+    bool showFab = MediaQuery.of(context).viewInsets.bottom != 0;
+
     Future<File> saveImagePermanently(String imagePath) async {
       final directory = await getApplicationDocumentsDirectory();
       final name = basename(imagePath);
@@ -74,23 +76,26 @@ class _HomeLayoutPageState extends State<HomeLayoutPage> {
         onChangedTab: onChangedTab,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: SpeedDial(
-        backgroundColor: Colors.blue,
-        icon: Icons.add,
-        activeIcon: Icons.close,
-        children: [
-          SpeedDialChild(
-            child: const Icon(FontAwesomeIcons.image),
-            label: "Gallery",
-            onTap: () => getImage(ImageSource.gallery),
-          ),
-          SpeedDialChild(
-            child: const Icon(FontAwesomeIcons.camera),
-            label: "Camera",
-            onTap: () => getImage(ImageSource.camera),
-          ),
-        ],
-        tooltip: 'Add',
+      floatingActionButton: Visibility(
+        visible: !showFab,
+        child: SpeedDial(
+          backgroundColor: Colors.blue,
+          icon: Icons.add,
+          activeIcon: Icons.close,
+          children: [
+            SpeedDialChild(
+              child: const Icon(FontAwesomeIcons.image),
+              label: "Gallery",
+              onTap: () => getImage(ImageSource.gallery),
+            ),
+            SpeedDialChild(
+              child: const Icon(FontAwesomeIcons.camera),
+              label: "Camera",
+              onTap: () => getImage(ImageSource.camera),
+            ),
+          ],
+          tooltip: 'Add',
+        ),
       ),
     );
   }

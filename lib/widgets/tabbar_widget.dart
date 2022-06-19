@@ -50,27 +50,34 @@ class _TabbarWidgetState extends State<TabbarWidget> {
                 .doc(currentUser?.uid)
                 .snapshots(),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(),
+              if (snapshot.hasData) {
+                Author? author = Author.fromJson(snapshot.data.data());
+                return GestureDetector(
+                  onTap: () => widget.onChangedTab(3),
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(36),
+                    ),
+                    child: Image(
+                      image: NetworkImage(author.avatar),
+                      width: 32,
+                      height: 32,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 );
               }
-
-              Author? author = Author.fromJson(snapshot.data.data());
 
               return GestureDetector(
                 onTap: () => widget.onChangedTab(3),
                 child: ClipRRect(
-                  borderRadius: const BorderRadius.all(
-                    Radius.circular(36),
-                  ),
-                  child: Image(
-                    image: NetworkImage(author.avatar),
-                    width: 32,
-                    height: 32,
-                    fit: BoxFit.cover,
-                  ),
-                ),
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(36),
+                    ),
+                    child: Container(
+                      width: 32,
+                      height: 32,
+                    )),
               );
             }),
       ]),

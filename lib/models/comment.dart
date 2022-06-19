@@ -33,4 +33,15 @@ class Comment {
       postRef: json['postRef'],
     );
   }
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'id': id,
+      'content': content,
+      'createdAt': createdAt,
+      'likes': likes,
+      'userRef': userRef,
+      'postRef': postRef,
+    };
+  }
 }

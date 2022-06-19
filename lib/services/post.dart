@@ -7,6 +7,8 @@ import 'package:imagesio/models/post.dart';
 class PostService with ChangeNotifier {
   CollectionReference postsRef = FirebaseFirestore.instance.collection('posts');
 
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
   Future<Post?> getPost(String postId) async {
     try {
       DocumentSnapshot docSnapshot = await postsRef.doc(postId).get();
@@ -94,5 +96,26 @@ class PostService with ChangeNotifier {
         .collection('posts')
         .doc(post.id)
         .update({'likes': postLikes});
+  }
+
+  void commentPost(String content, String postId, String userId) {
+    // create comment Id
+    String commentId = firestore.collection('posts').doc().id;
+
+    Comment comment = Comment(
+        id: commentId,
+        content: content,
+        likes: [],
+        userRef: firestore.collection('users').doc(userId),
+        postRef: firestore.collection('posts').doc(postId),
+        createdAt: DateTime.now().millisecondsSinceEpoch);
+
+    firestore
+        .collection('posts')
+        .doc(postId)
+        .collection('comments')
+        .doc(commentId)
+        .set(comment.toFirestore());
+    print(comment);
   }
 }

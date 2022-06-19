@@ -5,13 +5,10 @@ import 'package:imagesio/models/author.dart';
 import 'package:imagesio/models/comment.dart';
 import 'package:imagesio/models/post.dart';
 import 'package:imagesio/screens/post/comment_item.dart';
-import 'package:imagesio/screens/post/comment_page.dart';
 import 'package:imagesio/screens/post/comment_section.dart';
 import 'package:imagesio/screens/post/fullscreen_image.dart';
 import 'package:imagesio/services/post.dart';
 import 'package:provider/provider.dart';
-
-import '../../widgets/draggable_line.dart';
 
 class PostPage extends StatefulWidget {
   static const routeName = '/post';
@@ -103,7 +100,9 @@ class _PostPageState extends State<PostPage> {
                           ),
                           AuthorWidget(author: author),
                           PostContent(post: post),
-                          ReactionWidget(post: post),
+                          ReactionWidget(
+                            post: post,
+                          ),
                         ],
                       ),
                     ),
@@ -126,6 +125,13 @@ class ReactionWidget extends StatefulWidget {
 
 class _ReactionWidgetState extends State<ReactionWidget> {
   bool isOpenComment = false;
+
+  void toggleComment() {
+    setState(() {
+      isOpenComment = !isOpenComment;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     User? currentUser = Provider.of<User?>(context);
@@ -183,11 +189,7 @@ class _ReactionWidgetState extends State<ReactionWidget> {
                   builder: (BuildContext context, AsyncSnapshot snapshot) {
                     return Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: () {
-                          setState(() {
-                            isOpenComment = !isOpenComment;
-                          });
-                        },
+                        onPressed: toggleComment,
                         icon: const Icon(
                           Icons.comment_rounded,
                           color: Colors.grey,
@@ -301,57 +303,6 @@ class AuthorWidget extends StatelessWidget {
   }
 }
 
-class CommentInput extends StatefulWidget {
-  const CommentInput({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  State<CommentInput> createState() => _CommentInputState();
-}
-
-class _CommentInputState extends State<CommentInput> {
-  TextEditingController controller = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-        // keyboardType: TextInputType.none,
-        controller: controller,
-        maxLines: 4,
-        minLines: 1,
-        decoration: InputDecoration(
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
-          fillColor: Colors.grey[200],
-          filled: true,
-          enabledBorder: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(
-              Radius.circular(12.0),
-            ),
-            borderSide: BorderSide(
-              color: Colors.white,
-              width: 0.0,
-            ),
-          ),
-          focusedBorder: const OutlineInputBorder(
-            borderRadius: BorderRadius.all(
-              Radius.circular(12.0),
-            ),
-            borderSide: BorderSide(
-              color: Colors.blue,
-              width: 1.0,
-            ),
-          ),
-          hintStyle: const TextStyle(
-            fontSize: 12.0,
-            color: Colors.grey,
-          ),
-          isDense: true,
-        ));
-  }
-}
-
 class TopBarAction extends StatefulWidget {
   final String postId;
 
@@ -362,94 +313,18 @@ class TopBarAction extends StatefulWidget {
 }
 
 class _TopBarActionState extends State<TopBarAction> {
-  int _currentTab = 0;
-
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
             onPressed: () => Navigator.pop(context),
             color: Colors.white,
             icon: const Icon(Icons.arrow_back_ios_rounded),
             iconSize: 24.0,
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(vertical: 0.0, horizontal: 8.0),
-            decoration: const BoxDecoration(
-              borderRadius: BorderRadius.all(
-                Radius.circular(24),
-              ),
-              color: Color.fromRGBO(38, 38, 38, 0.2),
-            ),
-            child: Row(
-              children: [
-                ElevatedButton(
-                  onPressed: () => setState(() {
-                    _currentTab = 0;
-                  }),
-                  child: const Text('Picture'),
-                  style: ElevatedButton.styleFrom(
-                    primary:
-                        Colors.white.withOpacity(_currentTab == 0 ? 1 : 0.6),
-                    onPrimary:
-                        Colors.black.withOpacity(_currentTab == 0 ? 1 : 0.6),
-                    textStyle: TextStyle(
-                        fontWeight: _currentTab == 0
-                            ? FontWeight.w700
-                            : FontWeight.normal),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(36),
-                    ),
-                  ),
-                ),
-                const SizedBox(
-                  width: 4.0,
-                ),
-
-                // Open Comment Sheet
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      _currentTab = 1;
-                    });
-
-                    // Navigator.pushNamed(context, 'comment',
-                    //     arguments: {'postId': widget.postId}).whenComplete(
-                    //   () => () => setState(() {
-                    //         _currentTab = 0;
-                    //       }),
-                    // );
-                    // showModalBottomSheet(
-                    //   isScrollControlled: true,
-                    //   backgroundColor: Colors.transparent,
-                    //   context: context,
-                    //   builder: (context) => CommentSheet(postId: widget.postId),
-                    // ).whenComplete(
-                    //   () => setState(() {
-                    //     _currentTab = 0;
-                    //   }),
-                    // );
-                  },
-                  child: const Text('Comment'),
-                  style: ElevatedButton.styleFrom(
-                    primary:
-                        Colors.white.withOpacity(_currentTab == 1 ? 1 : 0.6),
-                    onPrimary:
-                        Colors.black.withOpacity(_currentTab == 1 ? 1 : 0.6),
-                    textStyle: TextStyle(
-                        fontWeight: _currentTab == 1
-                            ? FontWeight.w700
-                            : FontWeight.normal),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(36),
-                    ),
-                  ),
-                ),
-              ],
-            ),
           ),
           IconButton(
             onPressed: () {},
@@ -458,125 +333,124 @@ class _TopBarActionState extends State<TopBarAction> {
             iconSize: 36.0,
           ),
         ],
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
       ),
     );
   }
 }
 
-class MakeDismissible extends StatelessWidget {
-  final Widget child;
-  const MakeDismissible({Key? key, required this.child}) : super(key: key);
+// class MakeDismissible extends StatelessWidget {
+//   final Widget child;
+//   const MakeDismissible({Key? key, required this.child}) : super(key: key);
 
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () => Navigator.of(context).pop(),
-      child: GestureDetector(
-        onTap: () {},
-        child: child,
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return GestureDetector(
+//       behavior: HitTestBehavior.opaque,
+//       onTap: () => Navigator.of(context).pop(),
+//       child: GestureDetector(
+//         onTap: () {},
+//         child: child,
+//       ),
+//     );
+//   }
+// }
 
-class CommentSheet extends StatefulWidget {
-  final String postId;
-  const CommentSheet({Key? key, required this.postId}) : super(key: key);
+// class CommentSheet extends StatefulWidget {
+//   final String postId;
+//   const CommentSheet({Key? key, required this.postId}) : super(key: key);
 
-  @override
-  State<CommentSheet> createState() => _CommentSheetState();
-}
+//   @override
+//   State<CommentSheet> createState() => _CommentSheetState();
+// }
 
-class _CommentSheetState extends State<CommentSheet> {
-  @override
-  Widget build(BuildContext context) {
-    Stream<QuerySnapshot<Map<String, dynamic>>> dataStream = FirebaseFirestore
-        .instance
-        .collection('posts')
-        .doc(widget.postId)
-        .collection('comments')
-        .snapshots();
-    return MakeDismissible(
-      child: DraggableScrollableSheet(
-        initialChildSize: 0.85,
-        minChildSize: 0.5,
-        maxChildSize: 0.85,
-        builder: (_, controller) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(
-              top: Radius.circular(36),
-            ),
-          ),
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const DraggableLine(),
-              const SizedBox(
-                height: 10,
-              ),
-              Expanded(
-                child: StreamBuilder(
-                  stream: dataStream,
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasError) {
-                      return const Center(child: Text('Something went wrong'));
-                    }
+// class _CommentSheetState extends State<CommentSheet> {
+//   @override
+//   Widget build(BuildContext context) {
+//     Stream<QuerySnapshot<Map<String, dynamic>>> dataStream = FirebaseFirestore
+//         .instance
+//         .collection('posts')
+//         .doc(widget.postId)
+//         .collection('comments')
+//         .snapshots();
+//     return MakeDismissible(
+//       child: DraggableScrollableSheet(
+//         initialChildSize: 0.85,
+//         minChildSize: 0.5,
+//         maxChildSize: 0.85,
+//         builder: (_, controller) => Container(
+//           decoration: const BoxDecoration(
+//             color: Colors.white,
+//             borderRadius: BorderRadius.vertical(
+//               top: Radius.circular(36),
+//             ),
+//           ),
+//           padding: const EdgeInsets.all(16),
+//           child: Column(
+//             mainAxisSize: MainAxisSize.min,
+//             children: [
+//               const DraggableLine(),
+//               const SizedBox(
+//                 height: 10,
+//               ),
+//               Expanded(
+//                 child: StreamBuilder(
+//                   stream: dataStream,
+//                   builder: (BuildContext context,
+//                       AsyncSnapshot<QuerySnapshot> snapshot) {
+//                     if (snapshot.hasError) {
+//                       return const Center(child: Text('Something went wrong'));
+//                     }
 
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    }
+//                     if (snapshot.connectionState == ConnectionState.waiting) {
+//                       return const Center(
+//                         child: CircularProgressIndicator(),
+//                       );
+//                     }
 
-                    if (snapshot.hasData) {
-                      List<Comment> listComments = [];
+//                     if (snapshot.hasData) {
+//                       List<Comment> listComments = [];
 
-                      for (var docSnap in snapshot.data!.docs) {
-                        Comment comment = Comment.fromJson(
-                            docSnap.data() as Map<String, dynamic>);
-                        listComments.add(comment);
-                      }
+//                       for (var docSnap in snapshot.data!.docs) {
+//                         Comment comment = Comment.fromJson(
+//                             docSnap.data() as Map<String, dynamic>);
+//                         listComments.add(comment);
+//                       }
 
-                      return CommentListView(listComments: listComments);
-                    }
+//                       return CommentListView(listComments: listComments);
+//                     }
 
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  },
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                    top: 16, bottom: MediaQuery.of(context).viewInsets.bottom),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: const [
-                    Flexible(
-                      child: CommentInput(),
-                    ),
-                    SizedBox(
-                      width: 8.0,
-                    ),
-                    Icon(
-                      Icons.arrow_circle_right,
-                      size: 36.0,
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
+//                     return const Center(
+//                       child: CircularProgressIndicator(),
+//                     );
+//                   },
+//                 ),
+//               ),
+//               Padding(
+//                 padding: EdgeInsets.only(
+//                     top: 16, bottom: MediaQuery.of(context).viewInsets.bottom),
+//                 child: Row(
+//                   crossAxisAlignment: CrossAxisAlignment.end,
+//                   children: const [
+//                     Flexible(
+//                       child: CommentInput(),
+//                     ),
+//                     SizedBox(
+//                       width: 8.0,
+//                     ),
+//                     Icon(
+//                       Icons.arrow_circle_right,
+//                       size: 36.0,
+//                     ),
+//                   ],
+//                 ),
+//               )
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class CommentListView extends StatelessWidget {
   const CommentListView({

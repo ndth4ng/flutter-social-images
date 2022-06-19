@@ -13,11 +13,11 @@ class CommentItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: FirebaseFirestore.instance
+    return FutureBuilder(
+      future: FirebaseFirestore.instance
           .collection('users')
           .doc(comment.userRef.id)
-          .snapshots(),
+          .get(),
       builder:
           (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
         if (snapshot.hasError) {
@@ -35,7 +35,7 @@ class CommentItem extends StatelessWidget {
           final time = DateTime.fromMillisecondsSinceEpoch(comment.createdAt);
 
           return Container(
-            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 0.0),
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
