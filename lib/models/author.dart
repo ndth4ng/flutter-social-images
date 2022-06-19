@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Author {
   final String uid, email, avatar;
-  String? displayName, username;
+  String? displayName, username, bio;
   List<DocumentReference>? followers, followings;
   List<dynamic>? notifications;
 
@@ -13,6 +13,7 @@ class Author {
       this.username,
       this.displayName,
       this.followers,
+      this.bio,
       this.followings,
       this.notifications});
 
@@ -22,6 +23,7 @@ class Author {
       username: json['username'],
       email: json['email'],
       avatar: json['avatar'],
+      bio: json['bio'],
       displayName: json['displayName'],
       followers:
           json['followers'] is Iterable ? List.from(json['followers']) : [],

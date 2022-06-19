@@ -1,21 +1,16 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:imagesio/firebase_options.dart';
-import 'package:imagesio/models/author.dart';
-import 'package:imagesio/providers/auth_provider.dart';
 import 'package:imagesio/screens/auth/first_open.dart';
 import 'package:imagesio/screens/auth/login.dart';
 import 'package:imagesio/screens/auth/register.dart';
-import 'package:imagesio/screens/auth/verify_email.dart';
 import 'package:imagesio/screens/home/home_layout.dart';
 import 'package:imagesio/screens/post/add_post.dart';
 import 'package:imagesio/screens/post/comment_page.dart';
 import 'package:imagesio/screens/post/post_page.dart';
 import 'package:imagesio/screens/root.dart';
 import 'package:imagesio/services/auth.dart';
-import 'package:imagesio/services/post.dart';
 import 'package:provider/provider.dart';
 
 // import 'package:imagesio/services/auth.dart';

@@ -138,7 +138,7 @@ class _LoginPageState extends State<LoginPage> {
                     width: 50,
                     height: 50,
                     child: const Image(
-                      image: AssetImage('assets/facebook-logo.png'),
+                      image: AssetImage('assets/images/facebook-logo.png'),
                     ),
                   ),
                   const SizedBox(
@@ -149,7 +149,7 @@ class _LoginPageState extends State<LoginPage> {
                     width: 50,
                     height: 50,
                     child: const Image(
-                      image: AssetImage('assets/google-logo.png'),
+                      image: AssetImage('assets/images/google-logo.png'),
                     ),
                   ),
                   const SizedBox(
@@ -160,7 +160,7 @@ class _LoginPageState extends State<LoginPage> {
                     width: 50,
                     height: 50,
                     child: const Image(
-                      image: AssetImage('assets/apple-logo.png'),
+                      image: AssetImage('assets/images/apple-logo.png'),
                     ),
                   )
                 ],
