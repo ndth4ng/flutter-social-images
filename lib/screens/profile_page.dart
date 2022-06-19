@@ -3,9 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:imagesio/models/author.dart';
-import 'package:imagesio/models/post.dart';
 import 'package:imagesio/shared/constants.dart';
-import 'package:imagesio/widgets/custom_floating_button.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
@@ -118,7 +116,89 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     IconButton(
                       onPressed: () {
-                        MyFloatingActionButton();
+                        showModalBottomSheet(
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(23),
+                              topLeft: Radius.circular(40),
+                            ),
+                          ),
+                          isScrollControlled: false, // chi co the keo xuong
+                          isDismissible:
+                              true, // co the keo xuong va an vao auto out
+                          backgroundColor: Colors.white,
+                          context: context,
+                          builder: (context) => DraggableScrollableSheet(
+                            // initialChildSize: 0.4,
+                            // minChildSize: 0.2,
+                            // maxChildSize: 0.6,
+                            builder: (context, scrollController) {
+                              return SingleChildScrollView(
+                                controller: ModalScrollController.of(context),
+                                child: Column(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    const Text(
+                                      'Infomation',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const Text(
+                                      'Profile',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                    const Text(
+                                      'Edit Profile',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                    const Text(
+                                      'Support',
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const Text(
+                                      'Get Support',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                    const Text(
+                                      'Security and privacy',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                      ),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {},
+                                      child: const Text('Message'),
+                                      style: ElevatedButton.styleFrom(
+                                        primary: Colors.blue,
+                                        onPrimary: Colors.black,
+                                        fixedSize: const Size(170, 35),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(36),
+                                        ),
+                                      ),
+                                    ),
+                                    Container(
+                                      color: Colors.white,
+                                      height: 300,
+                                      width: 250,
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                        );
                       },
                       icon: const Icon(
                         Icons.settings,
@@ -565,86 +645,7 @@ class BottomSheetModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
-      onPressed: () {
-        showModalBottomSheet(
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              topRight: Radius.circular(23),
-              topLeft: Radius.circular(40),
-            ),
-          ),
-          isScrollControlled: false, // chi co the keo xuong
-          isDismissible: true, // co the keo xuong va an vao auto out
-          backgroundColor: Colors.white,
-          context: context,
-          builder: (context) => DraggableScrollableSheet(
-            // initialChildSize: 0.4,
-            // minChildSize: 0.2,
-            // maxChildSize: 0.6,
-            builder: (context, scrollController) {
-              return SingleChildScrollView(
-                controller: ModalScrollController.of(context),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    const Text(
-                      'Infomation',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const Text(
-                      'Profile',
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
-                    ),
-                    const Text(
-                      'Edit Profile',
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
-                    ),
-                    const Text(
-                      'Support',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    const Text(
-                      'Get Support',
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
-                    ),
-                    const Text(
-                      'Security and privacy',
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {},
-                      child: const Text('Message'),
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.blue,
-                        onPrimary: Colors.black,
-                        fixedSize: const Size(170, 35),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(36),
-                        ),
-                      ),
-                    ),
-                    Container(
-                      color: Colors.white,
-                      height: 300,
-                      width: 250,
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        );
-      },
+      onPressed: () {},
     );
   }
 }

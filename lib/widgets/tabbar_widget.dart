@@ -54,15 +54,12 @@ class _TabbarWidgetState extends State<TabbarWidget> {
                 Author? author = Author.fromJson(snapshot.data.data());
                 return GestureDetector(
                   onTap: () => widget.onChangedTab(3),
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(36),
-                    ),
-                    child: Image(
-                      image: NetworkImage(author.avatar),
-                      width: 32,
-                      height: 32,
-                      fit: BoxFit.cover,
+                  child: CircleAvatar(
+                    backgroundColor: Colors.blue,
+                    radius: 16.0,
+                    child: CircleAvatar(
+                      backgroundImage: NetworkImage(author.avatar),
+                      radius: widget.index == 3 ? 14.0 : 16.0,
                     ),
                   ),
                 );
@@ -97,6 +94,7 @@ class _TabbarWidgetState extends State<TabbarWidget> {
       child: IconButton(
         onPressed: () => widget.onChangedTab(index),
         icon: icon,
+        iconSize: isSelected ? 26.0 : 24.0,
       ),
     );
   }

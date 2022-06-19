@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 class MyFloatingActionButton extends StatelessWidget {
+  const MyFloatingActionButton({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton(
       onPressed: () {
         showModalBottomSheet(
-          shape: RoundedRectangleBorder(
+          shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
               topRight: Radius.circular(23),
               topLeft: Radius.circular(40),

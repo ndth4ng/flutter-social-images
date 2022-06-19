@@ -28,9 +28,6 @@ class SearchPage extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
               ),
             ),
-            // SizedBox(
-            //   height: 5.0,
-            // ),
             Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 15.0,
@@ -65,7 +62,6 @@ class SearchPage extends StatelessWidget {
                 ),
               ),
             ),
-
             const SizedBox(
               height: 16,
             ),
