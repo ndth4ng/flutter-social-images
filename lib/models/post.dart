@@ -5,8 +5,8 @@ import 'package:imagesio/models/comment.dart';
 class Post {
   Post({
     required this.id,
-    required this.title,
-    required this.description,
+    this.title,
+    this.description,
     required this.imageUrl,
     this.imageId,
     required this.userRef,
@@ -17,7 +17,8 @@ class Post {
     this.author,
   });
 
-  final String id, title, description, imageUrl;
+  final String id, imageUrl;
+  final String? title, description;
   String? imageId;
   int createdAt;
   final DocumentReference userRef;

@@ -493,7 +493,7 @@ class _PostContentState extends State<PostContent> {
           Container(
             alignment: Alignment.center,
             child: Text(
-              widget.post.title,
+              widget.post.title ?? '',
               textAlign: TextAlign.left,
               style: const TextStyle(
                 fontWeight: FontWeight.w700,
@@ -517,7 +517,7 @@ class _PostContentState extends State<PostContent> {
                   Container(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      widget.post.description,
+                      widget.post.description ?? '',
                       textAlign: TextAlign.left,
                       maxLines: _seeMore == false ? defaultLines : null,
                       overflow:
@@ -544,7 +544,7 @@ class _PostContentState extends State<PostContent> {
               return Container(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  widget.post.description,
+                  widget.post.description ?? '',
                   textAlign: TextAlign.left,
                 ),
               );
