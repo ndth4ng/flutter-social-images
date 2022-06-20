@@ -1,53 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:imagesio/models/category.dart';
+import 'package:provider/provider.dart';
 
-class CategoryList extends StatefulWidget {
-  const CategoryList({Key? key}) : super(key: key);
-
-  @override
-  State<CategoryList> createState() => _CategoryListState();
-}
-
-class _CategoryListState extends State<CategoryList> {
-  final categoryList = [
-    'Tech',
-    'Sport',
-    'Anime',
-    'Game',
-    'Fashion',
-    'Tech',
-    'Sport',
-    'Anime',
-    'Game',
-    'Fashion',
-  ];
-
-  int _currentSelected = 0;
+class CategoryList extends StatelessWidget {
+  final Function changeCategory;
+  final Category category;
+  const CategoryList(
+      {Key? key, required this.changeCategory, required this.category})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+    List<Category> categories = Provider.of<List<Category>>(context);
+    return SizedBox(
       height: 30,
-      child: ListView.separated(
+      child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, index) => GestureDetector(
-                onTap: () => setState(() {
-                  _currentSelected = index;
-                }),
-                child: Text(
-                  categoryList[index],
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: _currentSelected == index
-                        ? FontWeight.bold
-                        : FontWeight.normal,
-                    color:
-                        _currentSelected == index ? Colors.blue : Colors.grey,
+                onTap: () {
+                  changeCategory(categories[index]);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Text(
+                    categories[index].title,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: category.id == categories[index].id
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                      color: category.id == categories[index].id
+                          ? Colors.blue
+                          : Colors.grey,
+                    ),
                   ),
                 ),
               ),
-          separatorBuilder: (_, index) => const SizedBox(width: 20),
-          itemCount: categoryList.length),
+          itemCount: categories.length),
     );
   }
 }

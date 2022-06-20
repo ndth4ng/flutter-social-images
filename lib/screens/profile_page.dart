@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:imagesio/models/author.dart';
@@ -15,44 +14,9 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  List<Map<String, String>> listPosts = [
-    {
-      'image': 'assets/images/post-1.jpg',
-    },
-    {
-      'image': 'assets/images/post-2.jpg',
-    },
-    {
-      'image': 'assets/images/post-3.jpg',
-    },
-    {
-      'image': 'assets/images/post-4.jpg',
-    },
-    {
-      'image': 'assets/images/post-5.jpg',
-    },
-    {
-      'image': 'assets/images/post-6.jpg',
-    },
-    {
-      'image': 'assets/images/post-7.jpg',
-    },
-    {
-      'image': 'assets/images/post-8.jpg',
-    },
-    {
-      'image': 'assets/images/post-9.jpg',
-    },
-  ];
-
   @override
   Widget build(BuildContext context) {
-    User? currentUser = Provider.of<User?>(context);
-
-    final Stream<DocumentSnapshot> _stream = FirebaseFirestore.instance
-        .collection('users')
-        .doc(currentUser?.uid)
-        .snapshots();
+    Author currentUser = Provider.of<Author>(context);
 
     return Scaffold(
       backgroundColor: white,
@@ -67,38 +31,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   children: [
-                    StreamBuilder<DocumentSnapshot>(
-                      stream: _stream,
-                      builder: (BuildContext context, AsyncSnapshot snapshot) {
-                        if (snapshot.hasError) {
-                          return const Center(
-                              child: Text('Something went wrong'));
-                        }
-
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-
-                        if (snapshot.hasData) {
-                          Author? author = Author.fromJson(
-                              snapshot.data.data() as Map<String, dynamic>);
-
-                          return Text(
-                            author.username!,
-                            style: const TextStyle(
-                              color: black,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 24,
-                            ),
-                          );
-                        }
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      },
+                    Text(
+                      currentUser.username!,
+                      style: const TextStyle(
+                        color: black,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 24,
+                      ),
                     ),
                     const Icon(Icons.keyboard_arrow_down_rounded),
                     Container(
@@ -216,161 +155,133 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    StreamBuilder<DocumentSnapshot>(
-                        stream: _stream,
-                        builder:
-                            (BuildContext context, AsyncSnapshot snapshot) {
-                          if (snapshot.hasError) {
-                            return const Center(
-                                child: Text('Something went wrong'));
-                          }
-
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-
-                          if (snapshot.hasData) {
-                            Author? author = Author.fromJson(
-                                snapshot.data.data() as Map<String, dynamic>);
-
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const SizedBox(height: 14),
-                                // prifule statistic
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  child: Row(
-                                    children: [
-                                      ClipOval(
-                                        child: Image.network(
-                                          author.avatar,
-                                          height: 100,
-                                          width: 100,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 24),
-                                      Expanded(
-                                        child: Column(
-                                          children: [
-                                            Text(
-                                              author.followings?.length
-                                                      .toString() ??
-                                                  '0',
-                                              style: const TextStyle(
-                                                color: black,
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 18,
-                                              ),
-                                            ),
-                                            const Text(
-                                              'Following',
-                                              style: TextStyle(
-                                                color: black,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Column(
-                                          children: [
-                                            Text(
-                                              author.followers?.length
-                                                      .toString() ??
-                                                  '0',
-                                              style: const TextStyle(
-                                                color: black,
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 18,
-                                              ),
-                                            ),
-                                            const Text(
-                                              'Followers',
-                                              style: TextStyle(
-                                                color: black,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: Column(
-                                          children: const [
-                                            Text(
-                                              '1,042',
-                                              style: TextStyle(
-                                                color: black,
-                                                fontWeight: FontWeight.w600,
-                                                fontSize: 18,
-                                              ),
-                                            ),
-                                            Text(
-                                              'Like',
-                                              style: TextStyle(
-                                                color: black,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 14),
+                        // prifule statistic
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Row(
+                            children: [
+                              ClipOval(
+                                child: Image.network(
+                                  currentUser.avatar,
+                                  height: 100,
+                                  width: 100,
+                                  fit: BoxFit.cover,
                                 ),
-
-                                // username
-                                const SizedBox(height: 12),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  child: Text(
-                                    '@${author.username}',
-                                    style: const TextStyle(
-                                      color: black,
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16,
+                              ),
+                              const SizedBox(width: 24),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      currentUser.followings?.length
+                                              .toString() ??
+                                          '0',
+                                      style: const TextStyle(
+                                        color: black,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 18,
+                                      ),
                                     ),
-                                  ),
-                                ),
-
-                                // display name
-                                const SizedBox(height: 4),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  child: Text(
-                                    author.displayName ?? author.username!,
-                                    style: const TextStyle(
-                                      color: black,
-                                      fontSize: 14,
+                                    const Text(
+                                      'Following',
+                                      style: TextStyle(
+                                        color: black,
+                                      ),
                                     ),
-                                  ),
+                                  ],
                                 ),
-
-                                // bio
-                                const SizedBox(height: 4),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 20),
-                                  child: Text(
-                                    author.bio ?? '',
-                                    style: const TextStyle(
-                                      color: hyperlinkColor,
-                                      fontSize: 14,
+                              ),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      currentUser.followers?.length
+                                              .toString() ??
+                                          '0',
+                                      style: const TextStyle(
+                                        color: black,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 18,
+                                      ),
                                     ),
-                                  ),
+                                    const Text(
+                                      'Followers',
+                                      style: TextStyle(
+                                        color: black,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            );
-                          }
+                              ),
+                              Expanded(
+                                child: Column(
+                                  children: const [
+                                    Text(
+                                      '1,042',
+                                      style: TextStyle(
+                                        color: black,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Like',
+                                      style: TextStyle(
+                                        color: black,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
 
-                          return const CircularProgressIndicator();
-                        }),
+                        // username
+                        const SizedBox(height: 12),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Text(
+                            '@${currentUser.username}',
+                            style: const TextStyle(
+                              color: black,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+
+                        // display name
+                        const SizedBox(height: 4),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Text(
+                            currentUser.displayName ?? currentUser.username!,
+                            style: const TextStyle(
+                              color: black,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+
+                        // bio
+                        const SizedBox(height: 4),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Text(
+                            currentUser.bio ?? '',
+                            style: const TextStyle(
+                              color: hyperlinkColor,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
 
                     // Follow and Message buttons
                     const SizedBox(height: 24),
@@ -584,7 +495,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           .where('userRef',
                               isEqualTo: FirebaseFirestore.instance
                                   .collection('users')
-                                  .doc(currentUser?.uid))
+                                  .doc(currentUser.uid))
                           .get(),
                       builder: ((BuildContext context, AsyncSnapshot snapshot) {
                         if (snapshot.hasError) {

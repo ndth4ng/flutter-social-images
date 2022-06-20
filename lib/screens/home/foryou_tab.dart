@@ -1,14 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:imagesio/models/author.dart';
-import 'package:imagesio/services/auth.dart';
+import 'package:imagesio/models/category.dart';
 import 'package:imagesio/services/post.dart';
 import 'package:imagesio/widgets/category_list.dart';
 import 'package:imagesio/widgets/post_card.dart';
-import 'package:provider/provider.dart';
 
-class ForYouTab extends StatelessWidget {
+class ForYouTab extends StatefulWidget {
   const ForYouTab({Key? key}) : super(key: key);
+
+  @override
+  State<ForYouTab> createState() => _ForYouTabState();
+}
+
+class _ForYouTabState extends State<ForYouTab> {
+  Category category = Category(id: '', imageUrl: '', title: '');
+
+  void changeCategory(Category cate) {
+    setState(() {
+      category = cate;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,13 +27,13 @@ class ForYouTab extends StatelessWidget {
       backgroundColor: Theme.of(context).backgroundColor,
       body: Column(
         children: [
-          const CategoryList(),
+          CategoryList(changeCategory: changeCategory, category: category),
           Expanded(
             child: SingleChildScrollView(
               child: Column(
                 children: [
                   FutureBuilder(
-                    future: PostService().getPosts(),
+                    future: PostService().getPosts(category.title),
                     builder: (BuildContext context, AsyncSnapshot snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const CircularProgressIndicator();
@@ -31,7 +42,7 @@ class ForYouTab extends StatelessWidget {
                         return MasonryGridView.count(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          itemCount: 10,
+                          itemCount: snapshot.data.length,
                           padding: const EdgeInsets.symmetric(
                               vertical: 10, horizontal: 10),
                           // the number of columns

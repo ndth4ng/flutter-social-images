@@ -21,16 +21,15 @@ class NotificationPage extends StatefulWidget {
 class _NotificationPageState extends State<NotificationPage> {
   @override
   Widget build(BuildContext context) {
-    User? currentUser = Provider.of<User?>(context);
+    Author currentUser = Provider.of<Author>(context);
 
     final Stream<QuerySnapshot> _stream = FirebaseFirestore.instance
         .collection('users')
-        .doc(currentUser?.uid)
+        .doc(currentUser.uid)
         .collection('notifications')
         .orderBy('createdAt', descending: true)
         .snapshots();
 
-    print('rebuild');
     return Scaffold(
       appBar: AppBar(
         elevation: 0,

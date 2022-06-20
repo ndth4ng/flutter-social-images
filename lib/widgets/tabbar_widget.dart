@@ -21,6 +21,9 @@ class _TabbarWidgetState extends State<TabbarWidget> {
   @override
   Widget build(BuildContext context) {
     User? currentUser = Provider.of<User?>(context);
+    Author? realUser = Provider.of<Author?>(context);
+
+    // print(realUser!.username);
 
     const placeholder = Opacity(
       opacity: 0,
