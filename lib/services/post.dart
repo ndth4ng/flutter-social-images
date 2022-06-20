@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:imagesio/models/author.dart';
+import 'package:imagesio/models/category.dart';
 import 'package:imagesio/models/comment.dart';
 import 'package:imagesio/models/post.dart';
 
@@ -25,19 +26,34 @@ class PostService with ChangeNotifier {
     }
   }
 
-  Future<List<Post>> getPosts() async {
+  Future<List<Post>> getPosts(String category) async {
     try {
-      QuerySnapshot querySnapshot = await postsRef.get();
+      QuerySnapshot querySnapshot = category == ''
+          ? await postsRef.limit(10).get()
+          : await postsRef
+              .where('keywords',
+                  arrayContains: category.toString().toLowerCase())
+              .get();
 
       List<Post> listPosts = querySnapshot.docs
           .map((doc) => Post.fromJson(doc.data() as Map<String, dynamic>))
           .toList();
-      // posts = listPosts;
+
       return listPosts;
     } catch (e) {
       print(e.toString());
       return [];
     }
+  }
+
+  Future<List<Category>> getCategories() async {
+    QuerySnapshot querySnapshot =
+        await FirebaseFirestore.instance.collection('keywords').get();
+
+    return querySnapshot.docs
+        .map((DocumentSnapshot categorySnapshot) =>
+            Category.fromJson(categorySnapshot.data() as Map<String, dynamic>))
+        .toList();
   }
 
   Future<List<Comment>> getPostComments(String postId) async {
