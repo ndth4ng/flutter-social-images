@@ -67,12 +67,14 @@ class Post {
 
   Map<String, dynamic> toFirestore() {
     return {
-      if (id != null) "id": id,
-      if (title != null) "title": title,
-      if (description != null) "description": description,
-      if (imageUrl != null) "imageUrl": imageUrl,
-      if (comments != null) "comments": comments,
-      if (userRef != null) "userRef": userRef,
+      "id": id,
+      "title": title,
+      "description": description,
+      "imageUrl": imageUrl,
+      "imageId": imageId,
+      "userRef": userRef,
+      "keywords": keywords,
+      "createdAt": createdAt,
     };
   }
 }

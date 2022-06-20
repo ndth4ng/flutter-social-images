@@ -9,7 +9,9 @@ import 'package:imagesio/screens/home/home_layout.dart';
 import 'package:imagesio/screens/post/add_post.dart';
 import 'package:imagesio/screens/post/comment_page.dart';
 import 'package:imagesio/screens/post/post_page.dart';
+import 'package:imagesio/screens/profile_page.dart';
 import 'package:imagesio/screens/root.dart';
+import 'package:imagesio/screens/user_profile.dart';
 import 'package:imagesio/services/auth.dart';
 import 'package:provider/provider.dart';
 
@@ -64,6 +66,7 @@ class MyApp extends StatelessWidget {
             PostPage.routeName: (context) => const PostPage(),
             AddPostPage.routeName: (context) => const AddPostPage(),
             CommentPage.routeName: (context) => const CommentPage(),
+            UserProfile.routeName: (context) => const UserProfile(),
           }),
     );
   }

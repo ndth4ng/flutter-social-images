@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:imagesio/models/author.dart';
 import 'package:imagesio/models/post.dart';
+import 'package:imagesio/screens/profile_page.dart';
+import 'package:imagesio/screens/user_profile.dart';
 import 'package:imagesio/services/post.dart';
 
 enum Menu { itemOne, itemTwo }
@@ -80,18 +82,24 @@ class _PostCardState extends State<PostCard> {
               Expanded(
                 child: Row(
                   children: [
-                    ClipRRect(
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(36),
+                    InkWell(
+                      onTap: () {
+                        Navigator.pushNamed(context, UserProfile.routeName,
+                            arguments: {'userId': widget.post.author!.uid});
+                      },
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(36),
+                        ),
+                        child: widget.post.author != null
+                            ? Image.network(
+                                widget.post.author!.avatar,
+                                height: 25,
+                                width: 25,
+                                fit: BoxFit.cover,
+                              )
+                            : Container(),
                       ),
-                      child: widget.post.author != null
-                          ? Image.network(
-                              widget.post.author!.avatar,
-                              height: 25,
-                              width: 25,
-                              fit: BoxFit.cover,
-                            )
-                          : Container(),
                     ),
                     const SizedBox(
                       width: 4.0,

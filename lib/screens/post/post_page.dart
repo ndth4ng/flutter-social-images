@@ -24,19 +24,15 @@ class _PostPageState extends State<PostPage> {
   Widget build(BuildContext context) {
     final arg = ModalRoute.of(context)!.settings.arguments as Map;
     String postId = arg['postId'];
-    Author author = arg['author'];
+    // Author author = arg['author'];
 
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: StreamBuilder(
-              stream: FirebaseFirestore.instance
-                  .collection('posts')
-                  .doc(postId)
-                  .snapshots(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<DocumentSnapshot> snapshot) {
+              stream: PostService().streamPost(postId),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.hasError) {
                   return const Center(child: Text('Something went wrong'));
                 }
@@ -47,9 +43,9 @@ class _PostPageState extends State<PostPage> {
                   );
                 }
 
-                var docsnap = snapshot.data;
-                Post post =
-                    Post.fromJson(docsnap?.data() as Map<String, dynamic>);
+                // var docsnap = snapshot.data;
+                // Post post =
+                //     Post.fromJson(docsnap?.data() as Map<String, dynamic>);
 
                 return Column(
                   children: [
@@ -82,26 +78,26 @@ class _PostPageState extends State<PostPage> {
                                 ),
                                 child: GestureDetector(
                                   child: Image(
-                                    image: NetworkImage(post.imageUrl),
+                                    image: NetworkImage(snapshot.data.imageUrl),
                                     fit: BoxFit.cover,
                                   ),
                                   onTap: () {
                                     Navigator.push(context,
                                         MaterialPageRoute(builder: (_) {
                                       return FullScreenImage(
-                                        imageUrl: post.imageUrl,
+                                        imageUrl: snapshot.data.imageUrl,
                                       );
                                     }));
                                   },
                                 ),
                               ),
-                              TopBarAction(postId: post.id)
+                              TopBarAction(postId: snapshot.data.id)
                             ],
                           ),
-                          AuthorWidget(author: author),
-                          PostContent(post: post),
+                          AuthorWidget(author: snapshot.data.author),
+                          PostContent(post: snapshot.data),
                           ReactionWidget(
-                            post: post,
+                            post: snapshot.data,
                           ),
                         ],
                       ),
