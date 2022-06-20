@@ -8,6 +8,7 @@ import 'package:imagesio/screens/auth/register.dart';
 import 'package:imagesio/screens/home/home_layout.dart';
 import 'package:imagesio/screens/post/add_post.dart';
 import 'package:imagesio/screens/post/comment_page.dart';
+import 'package:imagesio/screens/post/edit-post.dart';
 import 'package:imagesio/screens/post/post_page.dart';
 import 'package:imagesio/screens/profile_page.dart';
 import 'package:imagesio/screens/root.dart';
@@ -65,6 +66,7 @@ class MyApp extends StatelessWidget {
             RegisterPage.routeName: (context) => const RegisterPage(),
             PostPage.routeName: (context) => const PostPage(),
             AddPostPage.routeName: (context) => const AddPostPage(),
+            EditPostPage.routeName: (context) => const EditPostPage(),
             CommentPage.routeName: (context) => const CommentPage(),
             UserProfile.routeName: (context) => const UserProfile(),
           }),

@@ -184,7 +184,7 @@ class PostService with ChangeNotifier {
         keywords: Util().splitString(categories, ','),
       );
 
-      FirebaseFirestore.instance
+      await FirebaseFirestore.instance
           .collection('posts')
           .doc(postId)
           .set(newPost.toFirestore())
@@ -194,6 +194,24 @@ class PostService with ChangeNotifier {
     } catch (e) {
       print(e.toString());
       return '';
+    }
+  }
+
+  Future<bool> editPost(
+      String postId, String? title, description, String categories) async {
+    try {
+      print(Util().splitString(categories, ','));
+
+      await FirebaseFirestore.instance.collection('posts').doc(postId).update({
+        'title': title ?? '',
+        'description': description ?? '',
+        'keywords': Util().splitString(categories, ','),
+      });
+
+      return true;
+    } catch (e) {
+      print(e.toString());
+      return false;
     }
   }
 }
