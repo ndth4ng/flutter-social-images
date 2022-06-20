@@ -10,48 +10,54 @@ import 'package:imagesio/widgets/long_button.dart';
 import 'package:imagesio/widgets/prefix_icon.dart';
 import 'package:provider/provider.dart';
 
-class AddPostPage extends StatefulWidget {
-  static const routeName = 'add-post';
-  const AddPostPage({Key? key}) : super(key: key);
+class EditPostPage extends StatefulWidget {
+  static const routeName = '/edit-post';
+  const EditPostPage({Key? key}) : super(key: key);
 
   @override
-  State<AddPostPage> createState() => _AddPostPageState();
+  State<EditPostPage> createState() => _EditPostPageState();
 }
 
-class _AddPostPageState extends State<AddPostPage> {
+class _EditPostPageState extends State<EditPostPage> {
   final _formKey = GlobalKey<FormState>();
 
-  String title = '';
-  String description = '';
-  String categories = '';
+  TextEditingController titleController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+  TextEditingController categoriesController = TextEditingController();
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    descriptionController.dispose();
+    categoriesController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     User? user = Provider.of<User>(context);
+
     final arg = ModalRoute.of(context)!.settings.arguments as Map;
-    File image = arg['image'];
+    String postId = arg['postId'];
+    String title = arg['title'];
+    String description = arg['description'];
+    String categories = arg['categories'];
+    String imageUrl = arg['imageUrl'];
+
+    setState(() {
+      titleController.text = title;
+      descriptionController.text = description;
+      categoriesController.text = categories;
+    });
 
     void handleSubmit() async {
       if (_formKey.currentState!.validate()) {
-        // print('$title, $description, $categories');
-        String postId = await PostService()
-            .createPost(title, description, categories, image, user.uid);
+        bool result = await PostService().editPost(postId, titleController.text,
+            descriptionController.text, categoriesController.text);
 
-        if (postId != '') {
-          Navigator.pushReplacementNamed(context, '/post', arguments: {
-            'postId': postId,
-          });
+        if (result) {
+          Navigator.pop(context);
         }
-      }
-    }
-
-    handleChangeImage(ImageSource source) async {
-      File? newImage = await Util().getImage(source);
-
-      if (newImage != null) {
-        Navigator.pushReplacementNamed(context, 'add-post', arguments: {
-          'image': newImage,
-        });
       }
     }
 
@@ -60,7 +66,7 @@ class _AddPostPageState extends State<AddPostPage> {
         elevation: 0.0,
         backgroundColor: Theme.of(context).backgroundColor,
         foregroundColor: Colors.blue,
-        title: const Text('New Post'),
+        title: const Text('Edit Post'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -68,10 +74,11 @@ class _AddPostPageState extends State<AddPostPage> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              InkWell(
-                  onTap: () => handleChangeImage(ImageSource.gallery),
-                  child: SizedBox(
-                      width: 200, height: 200, child: Image.file(image))),
+              SizedBox(
+                width: 200,
+                height: 200,
+                child: Image.network(imageUrl),
+              ),
               const SizedBox(
                 height: 16.0,
               ),
@@ -80,9 +87,7 @@ class _AddPostPageState extends State<AddPostPage> {
                 child: Column(
                   children: [
                     TextFormField(
-                      onChanged: (val) {
-                        setState(() => title = val);
-                      },
+                      controller: titleController,
                       decoration: textInputDecoration.copyWith(
                         labelText: "Title",
                         hintText: "Enter title",
@@ -90,9 +95,7 @@ class _AddPostPageState extends State<AddPostPage> {
                     ),
                     const SizedBox(height: 16.0),
                     TextFormField(
-                      onChanged: (val) {
-                        setState(() => description = val);
-                      },
+                      controller: descriptionController,
                       decoration: textInputDecoration.copyWith(
                         labelText: "Description",
                         hintText: "Enter description",
@@ -100,12 +103,13 @@ class _AddPostPageState extends State<AddPostPage> {
                     ),
                     const SizedBox(height: 16.0),
                     TextFormField(
-                      onChanged: (val) {
-                        setState(() => categories = val);
-                      },
+                      controller: categoriesController,
                       validator: (String? val) {
+                        RegExp regExp = RegExp(r'^[A-Za-z0-9,\s]+$');
                         if (val != null && val.isEmpty) {
                           return "Please enter at least one category";
+                        } else if (!regExp.hasMatch(val!)) {
+                          return 'Valid character (a-z, A-Z, 0-9 and ,)';
                         }
                         return null;
                       },
@@ -114,10 +118,8 @@ class _AddPostPageState extends State<AddPostPage> {
                         hintText: "Enter categories",
                       ),
                     ),
-
                     const SizedBox(height: 24.0),
-                    // if (_formKey.currentState!.validate()) {}
-                    LongButton(text: 'Create', onPress: handleSubmit)
+                    LongButton(text: 'Save', onPress: handleSubmit)
                   ],
                 ),
               ),

@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:imagesio/models/author.dart';
 import 'package:imagesio/models/category.dart';
 import 'package:imagesio/models/comment.dart';
 import 'package:imagesio/models/post.dart';
+import 'package:imagesio/services/util.dart';
 
 class PostService with ChangeNotifier {
   CollectionReference postsRef = FirebaseFirestore.instance.collection('posts');
@@ -44,6 +47,33 @@ class PostService with ChangeNotifier {
       print(e.toString());
       return [];
     }
+  }
+
+  Stream<Post> streamPost(String postId) {
+    return firestore
+        .collection('posts')
+        .doc(postId)
+        .snapshots()
+        .asyncMap((DocumentSnapshot documentSnapshot) async {
+      Post post =
+          Post.fromJson(documentSnapshot.data() as Map<String, dynamic>);
+
+      post = await populatePost(post);
+      return post;
+    });
+  }
+
+  Future<Post> populatePost(Post post) async {
+    Post populatedPost = post;
+
+    // populate user send
+    DocumentSnapshot userSendSnap = await post.userRef.get();
+
+    Author? userInfo =
+        Author.fromJson(userSendSnap.data() as Map<String, dynamic>);
+    populatedPost.author = userInfo;
+
+    return populatedPost;
   }
 
   Future<List<Category>> getCategories() async {
@@ -132,6 +162,56 @@ class PostService with ChangeNotifier {
         .collection('comments')
         .doc(commentId)
         .set(comment.toFirestore());
-    print(comment);
+  }
+
+  Future<String> createPost(String? title, description, String categories,
+      File image, String userId) async {
+    try {
+      Map<String, String> imageInfo = await Util().createImageUrl(image);
+
+      // create post Id
+      String postId = firestore.collection('posts').doc().id;
+
+      print(Util().splitString(categories, ','));
+
+      Post newPost = Post(
+        id: postId,
+        title: title ?? '',
+        description: description ?? '',
+        imageUrl: imageInfo['imageUrl']!,
+        userRef: FirebaseFirestore.instance.collection('users').doc(userId),
+        createdAt: DateTime.now().millisecondsSinceEpoch,
+        keywords: Util().splitString(categories, ','),
+      );
+
+      await FirebaseFirestore.instance
+          .collection('posts')
+          .doc(postId)
+          .set(newPost.toFirestore())
+          .catchError((e) => print(e.toString()));
+
+      return postId;
+    } catch (e) {
+      print(e.toString());
+      return '';
+    }
+  }
+
+  Future<bool> editPost(
+      String postId, String? title, description, String categories) async {
+    try {
+      print(Util().splitString(categories, ','));
+
+      await FirebaseFirestore.instance.collection('posts').doc(postId).update({
+        'title': title ?? '',
+        'description': description ?? '',
+        'keywords': Util().splitString(categories, ','),
+      });
+
+      return true;
+    } catch (e) {
+      print(e.toString());
+      return false;
+    }
   }
 }

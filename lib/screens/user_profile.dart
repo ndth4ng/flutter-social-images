@@ -2,22 +2,26 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:imagesio/models/author.dart';
-import 'package:imagesio/screens/post/post_page.dart';
 import 'package:imagesio/shared/constants.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+class UserProfile extends StatefulWidget {
+  static const routeName = '/user-profile';
+  const UserProfile({Key? key}) : super(key: key);
 
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  _UserProfileState createState() => _UserProfileState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _UserProfileState extends State<UserProfile> {
   @override
   Widget build(BuildContext context) {
     Author currentUser = Provider.of<Author>(context);
+
+    final arg = ModalRoute.of(context)!.settings.arguments as Map;
+    String userId = arg['userId'];
+
+    print(userId);
 
     return Scaffold(
       backgroundColor: white,
@@ -25,132 +29,6 @@ class _ProfilePageState extends State<ProfilePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // topbar
-            SizedBox(
-              height: 60,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  children: [
-                    Text(
-                      currentUser.username!,
-                      style: const TextStyle(
-                        color: black,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 24,
-                      ),
-                    ),
-                    const Icon(Icons.keyboard_arrow_down_rounded),
-                    Container(
-                      height: 8,
-                      width: 8,
-                      decoration: BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      onPressed: () {},
-                      icon: const Icon(Icons.add_a_photo),
-                    ),
-                    IconButton(
-                      onPressed: () {
-                        showModalBottomSheet(
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(23),
-                              topLeft: Radius.circular(40),
-                            ),
-                          ),
-                          isScrollControlled: false, // chi co the keo xuong
-                          isDismissible:
-                              true, // co the keo xuong va an vao auto out
-                          backgroundColor: Colors.white,
-                          context: context,
-                          builder: (context) => DraggableScrollableSheet(
-                            // initialChildSize: 0.4,
-                            // minChildSize: 0.2,
-                            // maxChildSize: 0.6,
-                            builder: (context, scrollController) {
-                              return SingleChildScrollView(
-                                controller: ModalScrollController.of(context),
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    const Text(
-                                      'Infomation',
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    const Text(
-                                      'Profile',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                      ),
-                                    ),
-                                    const Text(
-                                      'Edit Profile',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                      ),
-                                    ),
-                                    const Text(
-                                      'Support',
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    const Text(
-                                      'Get Support',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                      ),
-                                    ),
-                                    const Text(
-                                      'Security and privacy',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                      ),
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () {},
-                                      child: const Text('Message'),
-                                      style: ElevatedButton.styleFrom(
-                                        primary: Colors.blue,
-                                        onPrimary: Colors.black,
-                                        fixedSize: const Size(170, 35),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(36),
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      color: Colors.white,
-                                      height: 300,
-                                      width: 250,
-                                    ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                        );
-                      },
-                      icon: const Icon(
-                        Icons.settings,
-                        size: 25,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const Divider(height: 1),
-
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
@@ -168,8 +46,8 @@ class _ProfilePageState extends State<ProfilePage> {
                               ClipOval(
                                 child: Image.network(
                                   currentUser.avatar,
-                                  height: 80,
-                                  width: 80,
+                                  height: 100,
+                                  width: 100,
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -220,41 +98,17 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                               Expanded(
                                 child: Column(
-                                  children: [
-                                    FutureBuilder(
-                                        future: FirebaseFirestore.instance
-                                            .collection('posts')
-                                            .where('userRef',
-                                                isEqualTo: FirebaseFirestore
-                                                    .instance
-                                                    .collection('users')
-                                                    .doc(currentUser.uid))
-                                            .get(),
-                                        builder: (BuildContext context,
-                                            AsyncSnapshot snapshot) {
-                                          if (snapshot.hasError) {
-                                            return const Center(
-                                                child: Text('0'));
-                                          }
-
-                                          if (snapshot.connectionState ==
-                                              ConnectionState.waiting) {
-                                            return const Center(
-                                              child: Text('0'),
-                                            );
-                                          }
-                                          return Text(
-                                            snapshot.data.docs.length
-                                                .toString(),
-                                            style: const TextStyle(
-                                              color: black,
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 18,
-                                            ),
-                                          );
-                                        }),
-                                    const Text(
-                                      'Posts',
+                                  children: const [
+                                    Text(
+                                      '1,042',
+                                      style: TextStyle(
+                                        color: black,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Like',
                                       style: TextStyle(
                                         color: black,
                                       ),
@@ -310,39 +164,39 @@ class _ProfilePageState extends State<ProfilePage> {
 
                     // Follow and Message buttons
                     const SizedBox(height: 24),
-                    // Padding(
-                    //   padding: const EdgeInsets.all(16),
-                    //   child: Row(
-                    //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    //     mainAxisSize: MainAxisSize.min,
-                    //     children: [
-                    //       ElevatedButton(
-                    //         onPressed: () {},
-                    //         child: const Text('Follow'),
-                    //         style: ElevatedButton.styleFrom(
-                    //           primary: const Color(0xFF26BAEE),
-                    //           onPrimary: Colors.white,
-                    //           fixedSize: const Size(170, 35),
-                    //           shape: RoundedRectangleBorder(
-                    //             borderRadius: BorderRadius.circular(36),
-                    //           ),
-                    //         ),
-                    //       ),
-                    //       ElevatedButton(
-                    //         onPressed: () {},
-                    //         child: const Text('Message'),
-                    //         style: ElevatedButton.styleFrom(
-                    //           primary: Colors.white,
-                    //           onPrimary: Colors.black,
-                    //           fixedSize: const Size(170, 35),
-                    //           shape: RoundedRectangleBorder(
-                    //             borderRadius: BorderRadius.circular(36),
-                    //           ),
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {},
+                            child: const Text('Follow'),
+                            style: ElevatedButton.styleFrom(
+                              primary: const Color(0xFF26BAEE),
+                              onPrimary: Colors.white,
+                              fixedSize: const Size(170, 35),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(36),
+                              ),
+                            ),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {},
+                            child: const Text('Message'),
+                            style: ElevatedButton.styleFrom(
+                              primary: Colors.white,
+                              onPrimary: Colors.black,
+                              fixedSize: const Size(170, 35),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(36),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
 
                     // Stories
                     Padding(
@@ -352,8 +206,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           Column(
                             children: [
                               Container(
-                                height: 70,
-                                width: 70,
+                                height: 74,
+                                width: 74,
                                 padding: const EdgeInsets.all(4),
                                 decoration: BoxDecoration(
                                   border: Border.all(
@@ -364,8 +218,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                 child: ClipOval(
                                   child: Image.asset(
                                     'assets/images/highlight-1.jpg',
-                                    height: 66,
-                                    width: 66,
+                                    height: 70,
+                                    width: 70,
                                   ),
                                 ),
                               ),
@@ -373,12 +227,12 @@ class _ProfilePageState extends State<ProfilePage> {
                               const Text('Nguyen'),
                             ],
                           ),
-                          const SizedBox(width: 10),
+                          const SizedBox(width: 14),
                           Column(
                             children: [
                               Container(
-                                height: 70,
-                                width: 70,
+                                height: 74,
+                                width: 74,
                                 padding: const EdgeInsets.all(4),
                                 decoration: BoxDecoration(
                                   border: Border.all(
@@ -389,8 +243,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                 child: ClipOval(
                                   child: Image.asset(
                                     'assets/images/highlight-2.jpg',
-                                    height: 66,
-                                    width: 66,
+                                    height: 70,
+                                    width: 70,
                                   ),
                                 ),
                               ),
@@ -398,12 +252,12 @@ class _ProfilePageState extends State<ProfilePage> {
                               const Text('Huu'),
                             ],
                           ),
-                          const SizedBox(width: 10),
+                          const SizedBox(width: 14),
                           Column(
                             children: [
                               Container(
-                                height: 70,
-                                width: 70,
+                                height: 74,
+                                width: 74,
                                 padding: const EdgeInsets.all(4),
                                 decoration: BoxDecoration(
                                   border: Border.all(
@@ -414,8 +268,8 @@ class _ProfilePageState extends State<ProfilePage> {
                                 child: ClipOval(
                                   child: Image.asset(
                                     'assets/images/highlight-3.jpg',
-                                    height: 66,
-                                    width: 66,
+                                    height: 70,
+                                    width: 70,
                                   ),
                                 ),
                               ),
@@ -423,12 +277,12 @@ class _ProfilePageState extends State<ProfilePage> {
                               const Text('Loc'),
                             ],
                           ),
-                          const SizedBox(width: 10),
+                          const SizedBox(width: 14),
                           Column(
                             children: [
                               Container(
-                                height: 70,
-                                width: 70,
+                                height: 74,
+                                width: 74,
                                 padding: const EdgeInsets.all(4),
                                 decoration: BoxDecoration(
                                   border: Border.all(
@@ -437,7 +291,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   borderRadius: BorderRadius.circular(74),
                                 ),
                                 child: const Center(
-                                  child: Icon(Icons.add, size: 36),
+                                  child: Icon(Icons.add, size: 40),
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -548,17 +402,11 @@ class _ProfilePageState extends State<ProfilePage> {
                               mainAxisSpacing: 2,
                             ),
                             itemBuilder: (context, index) {
-                              return InkWell(
-                                onTap: () => Navigator.pushNamed(
-                                    context, PostPage.routeName, arguments: {
-                                  'postId': snapshot.data!.docs[index]['id']
-                                }),
-                                child: Container(
-                                  color: hyperlinkColor,
-                                  child: Image.network(
-                                    snapshot.data!.docs[index]['imageUrl'],
-                                    fit: BoxFit.cover,
-                                  ),
+                              return Container(
+                                color: hyperlinkColor,
+                                child: Image.network(
+                                  snapshot.data!.docs[index]['imageUrl'],
+                                  fit: BoxFit.cover,
                                 ),
                               );
                             },
