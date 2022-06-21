@@ -8,6 +8,7 @@ import 'package:imagesio/services/auth.dart';
 import 'package:provider/provider.dart';
 
 class Root extends StatelessWidget {
+  static const routeName = '/';
   const Root({Key? key}) : super(key: key);
 
   @override
@@ -16,7 +17,13 @@ class Root extends StatelessWidget {
 
     return (firebaseUser != null)
         ? StreamProvider<Author>.value(
-            initialData: Author(uid: '', email: '', avatar: ''),
+            initialData: Author(
+                uid: '',
+                email: '',
+                avatar: '',
+                username: '',
+                bio: '',
+                displayName: ''),
             value: AuthService().currentUser(firebaseUser),
             child: const VerifyEmailPage(),
           )

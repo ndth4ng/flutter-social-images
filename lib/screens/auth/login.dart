@@ -14,14 +14,14 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final _formKey = GlobalKey<FormState>();
+  final _formLogin = GlobalKey<FormState>();
   bool _obscureText = true;
 
   String email = '';
   String password = '';
 
   handleLogin() {
-    if (_formKey.currentState!.validate()) {
+    if (_formLogin.currentState!.validate()) {
       AuthService()
           .signIn(email: email.trim(), password: password.trim())
           .then((result) {
@@ -70,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 40.0),
               Form(
-                key: _formKey,
+                key: _formLogin,
                 child: Column(
                   children: [
                     TextFormField(

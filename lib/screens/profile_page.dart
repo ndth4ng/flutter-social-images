@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:imagesio/models/author.dart';
@@ -18,6 +19,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     Author currentUser = Provider.of<Author>(context);
+    User user = Provider.of<User>(context);
 
     return Scaffold(
       backgroundColor: white,
@@ -166,12 +168,17 @@ class _ProfilePageState extends State<ProfilePage> {
                           child: Row(
                             children: [
                               ClipOval(
-                                child: Image.network(
-                                  currentUser.avatar,
-                                  height: 80,
-                                  width: 80,
-                                  fit: BoxFit.cover,
-                                ),
+                                child: currentUser.avatar != ''
+                                    ? Image.network(
+                                        currentUser.avatar,
+                                        height: 70,
+                                        width: 70,
+                                        fit: BoxFit.cover,
+                                      )
+                                    : const SizedBox(
+                                        height: 70,
+                                        width: 70,
+                                      ),
                               ),
                               const SizedBox(width: 24),
                               Expanded(
@@ -228,7 +235,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                 isEqualTo: FirebaseFirestore
                                                     .instance
                                                     .collection('users')
-                                                    .doc(currentUser.uid))
+                                                    .doc(user.uid))
                                             .get(),
                                         builder: (BuildContext context,
                                             AsyncSnapshot snapshot) {
@@ -520,7 +527,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           .where('userRef',
                               isEqualTo: FirebaseFirestore.instance
                                   .collection('users')
-                                  .doc(currentUser.uid))
+                                  .doc(user.uid))
                           .get(),
                       builder: ((BuildContext context, AsyncSnapshot snapshot) {
                         if (snapshot.hasError) {
