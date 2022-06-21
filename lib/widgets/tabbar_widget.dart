@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 class TabbarWidget extends StatefulWidget {
   final int index;
-  final ValueChanged<int> onChangedTab;
+  final Function onChangedTab;
   const TabbarWidget({
     Key? key,
     required this.index,
@@ -21,9 +21,6 @@ class _TabbarWidgetState extends State<TabbarWidget> {
   @override
   Widget build(BuildContext context) {
     User? currentUser = Provider.of<User?>(context);
-    Author? realUser = Provider.of<Author?>(context);
-
-    // print(realUser!.username);
 
     const placeholder = Opacity(
       opacity: 0,

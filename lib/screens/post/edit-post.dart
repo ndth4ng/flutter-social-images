@@ -19,7 +19,7 @@ class EditPostPage extends StatefulWidget {
 }
 
 class _EditPostPageState extends State<EditPostPage> {
-  final _formKey = GlobalKey<FormState>();
+  final _formEditPost = GlobalKey<FormState>();
 
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
@@ -51,7 +51,7 @@ class _EditPostPageState extends State<EditPostPage> {
     });
 
     void handleSubmit() async {
-      if (_formKey.currentState!.validate()) {
+      if (_formEditPost.currentState!.validate()) {
         bool result = await PostService().editPost(postId, titleController.text,
             descriptionController.text, categoriesController.text);
 
@@ -83,7 +83,7 @@ class _EditPostPageState extends State<EditPostPage> {
                 height: 16.0,
               ),
               Form(
-                key: _formKey,
+                key: _formEditPost,
                 child: Column(
                   children: [
                     TextFormField(

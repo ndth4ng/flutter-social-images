@@ -19,7 +19,7 @@ class AddPostPage extends StatefulWidget {
 }
 
 class _AddPostPageState extends State<AddPostPage> {
-  final _formKey = GlobalKey<FormState>();
+  final _formAddPost = GlobalKey<FormState>();
 
   String title = '';
   String description = '';
@@ -32,7 +32,7 @@ class _AddPostPageState extends State<AddPostPage> {
     File image = arg['image'];
 
     void handleSubmit() async {
-      if (_formKey.currentState!.validate()) {
+      if (_formAddPost.currentState!.validate()) {
         // print('$title, $description, $categories');
         String postId = await PostService()
             .createPost(title, description, categories, image, user.uid);
@@ -76,7 +76,7 @@ class _AddPostPageState extends State<AddPostPage> {
                 height: 16.0,
               ),
               Form(
-                key: _formKey,
+                key: _formAddPost,
                 child: Column(
                   children: [
                     TextFormField(

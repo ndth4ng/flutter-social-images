@@ -14,7 +14,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final _formKey = GlobalKey<FormState>();
+  final _formRegister = GlobalKey<FormState>();
   bool _obscureText = true;
 
   String email = '';
@@ -23,7 +23,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String confirmPassword = '';
 
   handleSignUp() async {
-    if (_formKey.currentState!.validate()) {
+    if (_formRegister.currentState!.validate()) {
       if (await AuthService().checkUsername(username) == true) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -76,7 +76,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               const SizedBox(height: 40.0),
               Form(
-                key: _formKey,
+                key: _formRegister,
                 child: Column(
                   children: [
                     TextFormField(
