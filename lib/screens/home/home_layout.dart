@@ -1,19 +1,16 @@
-import 'dart:developer';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:imagesio/providers/screen_provider.dart';
 import 'package:imagesio/screens/home_page.dart';
 import 'package:imagesio/screens/notification_page.dart';
 import 'package:imagesio/screens/profile_page.dart';
 import 'package:imagesio/screens/search_page.dart';
+import 'package:imagesio/services/util.dart';
 import 'package:imagesio/widgets/tabbar_widget.dart';
-import 'package:path_provider/path_provider.dart';
-
-import 'package:path/path.dart';
+import 'package:provider/provider.dart';
 
 class HomeLayoutPage extends StatefulWidget {
   static const routeName = '/home';
@@ -24,7 +21,7 @@ class HomeLayoutPage extends StatefulWidget {
 }
 
 class _HomeLayoutPageState extends State<HomeLayoutPage> {
-  int _currentIndex = 0;
+  // int _currentIndex = 0;
 
   final pages = <Widget>[
     const HomePage(),
@@ -35,45 +32,26 @@ class _HomeLayoutPageState extends State<HomeLayoutPage> {
 
   @override
   Widget build(BuildContext context) {
+    int _currentTab = context.watch<ScreenProvider>().currentTab;
+    final screenProvider = Provider.of<ScreenProvider>(context);
+
     bool showFab = MediaQuery.of(context).viewInsets.bottom != 0;
 
-    Future<File> saveImagePermanently(String imagePath) async {
-      final directory = await getApplicationDocumentsDirectory();
-      final name = basename(imagePath);
-      final image = File('${directory.path}/$name');
+    handleAdd(ImageSource source) async {
+      File? image = await Util().getImage(source);
 
-      image.writeAsBytes(File(imagePath).readAsBytesSync());
-
-      return File(imagePath).copy(image.path);
-      // return image;
-    }
-
-    Future getImage(ImageSource source) async {
-      try {
-        final picker = ImagePicker();
-        final XFile? image = await picker.pickImage(source: source);
-
-        if (image == null) return;
-
-        // final imageTemporary = File(image.path);
-
-        final imagePermanent = await saveImagePermanently(image.path);
-
-        // print(imageTemporary);
-
+      if (image != null) {
         Navigator.pushNamed(context, 'add-post', arguments: {
-          'image': imagePermanent,
+          'image': image,
         });
-      } on PlatformException catch (e) {
-        print('Failed to pick image: $e');
       }
     }
 
     return Scaffold(
-      body: pages[_currentIndex],
+      body: pages[_currentTab],
       bottomNavigationBar: TabbarWidget(
-        index: _currentIndex,
-        onChangedTab: onChangedTab,
+        index: _currentTab,
+        onChangedTab: screenProvider.changeTab,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Visibility(
@@ -86,23 +64,17 @@ class _HomeLayoutPageState extends State<HomeLayoutPage> {
             SpeedDialChild(
               child: const Icon(FontAwesomeIcons.image),
               label: "Gallery",
-              onTap: () => getImage(ImageSource.gallery),
+              onTap: () => handleAdd(ImageSource.gallery),
             ),
             SpeedDialChild(
               child: const Icon(FontAwesomeIcons.camera),
               label: "Camera",
-              onTap: () => getImage(ImageSource.camera),
+              onTap: () => handleAdd(ImageSource.camera),
             ),
           ],
           tooltip: 'Add',
         ),
       ),
     );
-  }
-
-  void onChangedTab(int index) {
-    setState(() {
-      _currentIndex = index;
-    });
   }
 }

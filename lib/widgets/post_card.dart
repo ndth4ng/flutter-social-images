@@ -1,9 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:imagesio/models/author.dart';
 import 'package:imagesio/models/post.dart';
+import 'package:imagesio/providers/screen_provider.dart';
+import 'package:imagesio/screens/profile_page.dart';
+import 'package:imagesio/screens/user_profile.dart';
 import 'package:imagesio/services/post.dart';
+import 'package:provider/provider.dart';
 
 enum Menu { itemOne, itemTwo }
 
@@ -48,6 +53,23 @@ class _PostCardState extends State<PostCard> {
 
   @override
   Widget build(BuildContext context) {
+    final screenProvider = Provider.of<ScreenProvider>(context);
+    final user = Provider.of<User>(context);
+
+    void handleTapUser(String userId) {
+      if (user.uid == userId) {
+        screenProvider.changeTab(3);
+      } else {
+        Navigator.pushNamed(
+          context,
+          UserProfile.routeName,
+          arguments: {
+            'userId': userId,
+          },
+        );
+      }
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -80,32 +102,42 @@ class _PostCardState extends State<PostCard> {
               Expanded(
                 child: Row(
                   children: [
-                    ClipRRect(
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(36),
+                    InkWell(
+                      onTap: () {
+                        handleTapUser(widget.post.author!.uid);
+                      },
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.all(
+                          Radius.circular(36),
+                        ),
+                        child: widget.post.author != null
+                            ? Image.network(
+                                widget.post.author!.avatar,
+                                height: 25,
+                                width: 25,
+                                fit: BoxFit.cover,
+                              )
+                            : Container(),
                       ),
-                      child: widget.post.author != null
-                          ? Image.network(
-                              widget.post.author!.avatar,
-                              height: 25,
-                              width: 25,
-                              fit: BoxFit.cover,
-                            )
-                          : Container(),
                     ),
                     const SizedBox(
                       width: 4.0,
                     ),
                     Expanded(
                       child: widget.post.author != null
-                          ? Text(
-                              widget.post.author?.displayName ??
-                                  widget.post.author!.username!,
-                              style: const TextStyle(
-                                fontSize: 12.0,
+                          ? InkWell(
+                              onTap: () {
+                                handleTapUser(widget.post.author!.uid);
+                              },
+                              child: Text(
+                                widget.post.author?.displayName ??
+                                    widget.post.author!.username!,
+                                style: const TextStyle(
+                                  fontSize: 12.0,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                softWrap: false,
                               ),
-                              overflow: TextOverflow.ellipsis,
-                              softWrap: false,
                             )
                           : Container(),
                     ),

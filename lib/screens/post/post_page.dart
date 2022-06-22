@@ -6,6 +6,7 @@ import 'package:imagesio/models/comment.dart';
 import 'package:imagesio/models/post.dart';
 import 'package:imagesio/screens/post/comment_item.dart';
 import 'package:imagesio/screens/post/comment_section.dart';
+import 'package:imagesio/screens/post/edit-post.dart';
 import 'package:imagesio/screens/post/fullscreen_image.dart';
 import 'package:imagesio/services/post.dart';
 import 'package:provider/provider.dart';
@@ -24,19 +25,14 @@ class _PostPageState extends State<PostPage> {
   Widget build(BuildContext context) {
     final arg = ModalRoute.of(context)!.settings.arguments as Map;
     String postId = arg['postId'];
-    Author author = arg['author'];
 
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: StreamBuilder(
-              stream: FirebaseFirestore.instance
-                  .collection('posts')
-                  .doc(postId)
-                  .snapshots(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<DocumentSnapshot> snapshot) {
+              stream: PostService().streamPost(postId),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.hasError) {
                   return const Center(child: Text('Something went wrong'));
                 }
@@ -47,9 +43,9 @@ class _PostPageState extends State<PostPage> {
                   );
                 }
 
-                var docsnap = snapshot.data;
-                Post post =
-                    Post.fromJson(docsnap?.data() as Map<String, dynamic>);
+                // var docsnap = snapshot.data;
+                // Post post =
+                //     Post.fromJson(docsnap?.data() as Map<String, dynamic>);
 
                 return Column(
                   children: [
@@ -82,26 +78,28 @@ class _PostPageState extends State<PostPage> {
                                 ),
                                 child: GestureDetector(
                                   child: Image(
-                                    image: NetworkImage(post.imageUrl),
+                                    image: NetworkImage(snapshot.data.imageUrl),
                                     fit: BoxFit.cover,
                                   ),
                                   onTap: () {
                                     Navigator.push(context,
                                         MaterialPageRoute(builder: (_) {
                                       return FullScreenImage(
-                                        imageUrl: post.imageUrl,
+                                        imageUrl: snapshot.data.imageUrl,
                                       );
                                     }));
                                   },
                                 ),
                               ),
-                              TopBarAction(postId: post.id)
+                              TopBarAction(postId: snapshot.data.id)
                             ],
                           ),
-                          AuthorWidget(author: author),
-                          PostContent(post: post),
+                          AuthorWidget(
+                              author: snapshot.data.author,
+                              post: snapshot.data),
+                          PostContent(post: snapshot.data),
                           ReactionWidget(
-                            post: post,
+                            post: snapshot.data,
                           ),
                         ],
                       ),
@@ -218,7 +216,7 @@ class _ReactionWidgetState extends State<ReactionWidget> {
                     Icons.download,
                     color: Colors.grey,
                   ),
-                  label: const Text('3.879'),
+                  label: const Text('123'),
                   style: ElevatedButton.styleFrom(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -241,11 +239,17 @@ class _ReactionWidgetState extends State<ReactionWidget> {
 }
 
 class AuthorWidget extends StatelessWidget {
+  final Post post;
   final Author author;
-  const AuthorWidget({Key? key, required this.author}) : super(key: key);
+  const AuthorWidget({Key? key, required this.author, required this.post})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    User? currentUser = Provider.of<User?>(context);
+
+    String categories = post.keywords!.join(', ');
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
       child: Row(
@@ -288,15 +292,37 @@ class AuthorWidget extends StatelessWidget {
               ),
             ],
           ),
-          ElevatedButton(
-            onPressed: () {},
-            child: const Text('Follow'),
-            style: ElevatedButton.styleFrom(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(36),
-              ),
-            ),
-          ),
+          currentUser?.uid != author.uid
+              ? ElevatedButton(
+                  onPressed: () {},
+                  child: const Text('Follow'),
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(36),
+                    ),
+                  ),
+                )
+              : Tooltip(
+                  message: 'Edit',
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, EditPostPage.routeName,
+                          arguments: {
+                            'postId': post.id,
+                            'title': post.title,
+                            'description': post.description,
+                            'categories': categories,
+                            'imageUrl': post.imageUrl,
+                          });
+                    },
+                    child: const Icon(Icons.edit),
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(36),
+                      ),
+                    ),
+                  ),
+                )
         ],
       ),
     );

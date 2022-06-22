@@ -37,4 +37,32 @@ class NotificationType {
       postRef: json['postRef'],
     );
   }
+
+  factory NotificationType.fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+    SnapshotOptions? options,
+  ) {
+    final data = snapshot.data();
+    return NotificationType(
+      id: data?['id'],
+      state: data?['state'],
+      userSendRef: data?['userSendRef'],
+      userReceiveRef: data?['userReceiveRef'],
+      createdAt: data?['createdAt'],
+      postRef: data?['postRef'],
+      isSeen: data?['isSeen'],
+    );
+  }
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'id': id,
+      'state': state,
+      'userSendRef': userSendRef,
+      'userReceiveRef': userReceiveRef,
+      'createdAt': createdAt,
+      'postRef': postRef,
+      'isSeen': isSeen,
+    };
+  }
 }

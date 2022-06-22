@@ -2,14 +2,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:imagesio/firebase_options.dart';
+import 'package:imagesio/providers/screen_provider.dart';
 import 'package:imagesio/screens/auth/first_open.dart';
 import 'package:imagesio/screens/auth/login.dart';
 import 'package:imagesio/screens/auth/register.dart';
 import 'package:imagesio/screens/home/home_layout.dart';
 import 'package:imagesio/screens/post/add_post.dart';
 import 'package:imagesio/screens/post/comment_page.dart';
+import 'package:imagesio/screens/post/edit-post.dart';
 import 'package:imagesio/screens/post/post_page.dart';
+import 'package:imagesio/screens/profile_page.dart';
 import 'package:imagesio/screens/root.dart';
+import 'package:imagesio/screens/user_profile.dart';
 import 'package:imagesio/services/auth.dart';
 import 'package:provider/provider.dart';
 
@@ -36,6 +40,9 @@ class MyApp extends StatelessWidget {
           create: (context) => AuthService().firebaseUser,
           initialData: null,
         ),
+        ChangeNotifierProvider<ScreenProvider>(
+          create: (context) => ScreenProvider(),
+        )
       ],
       child: MaterialApp(
           debugShowCheckedModeBanner: false,
@@ -45,25 +52,18 @@ class MyApp extends StatelessWidget {
             backgroundColor: const Color(0xFFFEFEFE),
             fontFamily: 'Poppins',
           ),
-          // home: StreamBuilder<User?>(
-          //   stream: FirebaseAuth.instance.authStateChanges(),
-          //   builder: (context, snapshot) {
-          //     if (snapshot.hasData) {
-          //       return const VerifyEmailPage();
-          //     } else {
-          //       return const LoginPage();
-          //     }
-          //   },
-          // ),
           home: const Root(),
           routes: {
+            // Root.routeName: (context) => const Root(),
             FirstOpen.routeName: (context) => const FirstOpen(),
             HomeLayoutPage.routeName: (context) => const HomeLayoutPage(),
             LoginPage.routeName: (context) => const LoginPage(),
             RegisterPage.routeName: (context) => const RegisterPage(),
             PostPage.routeName: (context) => const PostPage(),
             AddPostPage.routeName: (context) => const AddPostPage(),
+            EditPostPage.routeName: (context) => const EditPostPage(),
             CommentPage.routeName: (context) => const CommentPage(),
+            UserProfile.routeName: (context) => const UserProfile(),
           }),
     );
   }
