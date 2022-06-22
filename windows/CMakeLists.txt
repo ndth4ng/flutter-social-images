@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
-project(imagesio LANGUAGES CXX)
+project(Imagesio LANGUAGES CXX)
 
-set(BINARY_NAME "imagesio")
+set(BINARY_NAME "Imagesio")
 
 cmake_policy(SET CMP0063 NEW)
 

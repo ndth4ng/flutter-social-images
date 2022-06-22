@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:imagesio/models/author.dart';
-import 'package:imagesio/models/comment.dart';
+import 'package:Imagesio/models/author.dart';
+import 'package:Imagesio/models/comment.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class CommentItem extends StatelessWidget {
@@ -64,7 +64,7 @@ class CommentItem extends StatelessWidget {
                               text:
                                   '${author.displayName ?? author.username}: ',
                               style:
-                                  const TextStyle(fontWeight: FontWeight.w600),
+                                  const TextStyle(fontWeight: FontWeight.w700),
                             ),
                             TextSpan(text: comment.content),
                           ],

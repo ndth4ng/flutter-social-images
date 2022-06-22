@@ -5,16 +5,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:imagesio/models/author.dart';
-import 'package:imagesio/providers/screen_provider.dart';
-import 'package:imagesio/screens/edit_profile.dart';
-import 'package:imagesio/screens/post/add_post.dart';
-import 'package:imagesio/screens/post/post_page.dart';
-import 'package:imagesio/services/auth.dart';
-import 'package:imagesio/services/util.dart';
-import 'package:imagesio/shared/constants.dart';
-import 'package:imagesio/widgets/long_button.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:Imagesio/models/author.dart';
+import 'package:Imagesio/providers/screen_provider.dart';
+import 'package:Imagesio/screens/edit_profile.dart';
+import 'package:Imagesio/screens/post/add_post.dart';
+import 'package:Imagesio/screens/post/post_page.dart';
+import 'package:Imagesio/services/auth.dart';
+import 'package:Imagesio/services/util.dart';
+import 'package:Imagesio/shared/constants.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -257,7 +255,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 14),
+                        const SizedBox(height: 16),
                         // prifule statistic
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -286,7 +284,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           '0',
                                       style: const TextStyle(
                                         color: black,
-                                        fontWeight: FontWeight.w600,
+                                        fontWeight: FontWeight.w700,
                                         fontSize: 18,
                                       ),
                                     ),
@@ -308,7 +306,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                           '0',
                                       style: const TextStyle(
                                         color: black,
-                                        fontWeight: FontWeight.w600,
+                                        fontWeight: FontWeight.w700,
                                         fontSize: 18,
                                       ),
                                     ),
@@ -351,7 +349,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                                 .toString(),
                                             style: const TextStyle(
                                               color: black,
-                                              fontWeight: FontWeight.w600,
+                                              fontWeight: FontWeight.w700,
                                               fontSize: 18,
                                             ),
                                           );
@@ -370,40 +368,40 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
 
                         // username
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 8),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Text(
                             '@${currentUser.username}',
                             style: const TextStyle(
                               color: black,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 16,
+                              fontSize: 14.0,
                             ),
                           ),
                         ),
 
                         // display name
-                        const SizedBox(height: 4),
+
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Text(
                             currentUser.displayName ?? currentUser.username!,
                             style: const TextStyle(
                               color: black,
-                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 16,
                             ),
                           ),
                         ),
 
                         // bio
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 16),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Text(
                             currentUser.bio ?? '',
                             style: const TextStyle(
-                              color: hyperlinkColor,
+                              color: Colors.black,
                               fontSize: 14,
                             ),
                           ),
@@ -713,7 +711,7 @@ class ProfileButton extends StatelessWidget {
           child: Text(
             text,
             style: const TextStyle(
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w700,
               color: black,
               fontSize: 16,
             ),

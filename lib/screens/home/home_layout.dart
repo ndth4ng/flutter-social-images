@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:imagesio/providers/screen_provider.dart';
-import 'package:imagesio/screens/home_page.dart';
-import 'package:imagesio/screens/notification_page.dart';
-import 'package:imagesio/screens/profile_page.dart';
-import 'package:imagesio/screens/search_page.dart';
-import 'package:imagesio/services/util.dart';
-import 'package:imagesio/widgets/tabbar_widget.dart';
+import 'package:Imagesio/providers/screen_provider.dart';
+import 'package:Imagesio/screens/home_page.dart';
+import 'package:Imagesio/screens/notification_page.dart';
+import 'package:Imagesio/screens/profile_page.dart';
+import 'package:Imagesio/screens/search_page.dart';
+import 'package:Imagesio/services/util.dart';
+import 'package:Imagesio/widgets/tabbar_widget.dart';
 import 'package:provider/provider.dart';
 
 class HomeLayoutPage extends StatefulWidget {

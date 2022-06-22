@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:imagesio/screens/post/post_page.dart';
-import 'package:imagesio/services/user.dart';
-import 'package:imagesio/shared/constants.dart';
+import 'package:Imagesio/screens/post/post_page.dart';
+import 'package:Imagesio/services/user.dart';
+import 'package:Imagesio/shared/constants.dart';
 
 class UserProfile extends StatefulWidget {
   static const routeName = '/user-profile';
@@ -81,7 +81,7 @@ class _UserProfileState extends State<UserProfile> {
                                                   '0',
                                               style: const TextStyle(
                                                 color: black,
-                                                fontWeight: FontWeight.w600,
+                                                fontWeight: FontWeight.w700,
                                                 fontSize: 18,
                                               ),
                                             ),
@@ -103,7 +103,7 @@ class _UserProfileState extends State<UserProfile> {
                                                   '0',
                                               style: const TextStyle(
                                                 color: black,
-                                                fontWeight: FontWeight.w600,
+                                                fontWeight: FontWeight.w700,
                                                 fontSize: 18,
                                               ),
                                             ),
@@ -151,7 +151,7 @@ class _UserProfileState extends State<UserProfile> {
                                                     style: const TextStyle(
                                                       color: black,
                                                       fontWeight:
-                                                          FontWeight.w600,
+                                                          FontWeight.w700,
                                                       fontSize: 18,
                                                     ),
                                                   );
@@ -178,7 +178,7 @@ class _UserProfileState extends State<UserProfile> {
                                     '@${snapshot.data.username}',
                                     style: const TextStyle(
                                       color: black,
-                                      fontWeight: FontWeight.w600,
+                                      fontWeight: FontWeight.w700,
                                       fontSize: 16,
                                     ),
                                   ),
@@ -528,7 +528,7 @@ class ProfileButton extends StatelessWidget {
           child: Text(
             text,
             style: const TextStyle(
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w700,
               color: black,
               fontSize: 16,
             ),

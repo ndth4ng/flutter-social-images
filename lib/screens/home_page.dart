@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:imagesio/models/category.dart';
-import 'package:imagesio/screens/home/following_tab.dart';
-import 'package:imagesio/screens/home/foryou_tab.dart';
-import 'package:imagesio/services/post.dart';
+import 'package:Imagesio/models/category.dart';
+import 'package:Imagesio/screens/home/following_tab.dart';
+import 'package:Imagesio/screens/home/foryou_tab.dart';
+import 'package:Imagesio/services/post.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {

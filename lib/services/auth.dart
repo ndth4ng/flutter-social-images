@@ -2,8 +2,8 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:imagesio/models/author.dart';
-import 'package:imagesio/services/util.dart';
+import 'package:Imagesio/models/author.dart';
+import 'package:Imagesio/services/util.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;

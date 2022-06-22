@@ -2,11 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:imagesio/models/author.dart';
-import 'package:imagesio/models/notification.dart';
-import 'package:imagesio/screens/post/post_page.dart';
-import 'package:imagesio/screens/user_profile.dart';
-import 'package:imagesio/services/notification.dart';
+import 'package:Imagesio/models/author.dart';
+import 'package:Imagesio/models/notification.dart';
+import 'package:Imagesio/screens/post/post_page.dart';
+import 'package:Imagesio/screens/user_profile.dart';
+import 'package:Imagesio/services/notification.dart';
 import 'package:provider/provider.dart';
 
 import 'package:timeago/timeago.dart' as timeago;

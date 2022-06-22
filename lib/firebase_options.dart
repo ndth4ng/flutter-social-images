@@ -59,7 +59,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '1097890445055',
     projectId: 'social-images-2cbed',
     storageBucket: 'social-images-2cbed.appspot.com',
-    iosClientId: '1097890445055-k7vt2i5s9462g1ptlsjl11t2kcgci119.apps.googleusercontent.com',
-    iosBundleId: 'com.example.imagesio',
+    iosClientId:
+        '1097890445055-k7vt2i5s9462g1ptlsjl11t2kcgci119.apps.googleusercontent.com',
+    iosBundleId: 'com.example.Imagesio',
   );
 }

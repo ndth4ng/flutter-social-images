@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:imagesio/models/author.dart';
-import 'package:imagesio/models/notification.dart';
-import 'package:imagesio/models/post.dart';
+import 'package:Imagesio/models/author.dart';
+import 'package:Imagesio/models/notification.dart';
+import 'package:Imagesio/models/post.dart';
 
 class NotificationService {
   Future<NotificationType> populateNotification(

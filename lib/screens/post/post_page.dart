@@ -1,14 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:imagesio/models/author.dart';
-import 'package:imagesio/models/comment.dart';
-import 'package:imagesio/models/post.dart';
-import 'package:imagesio/screens/post/comment_item.dart';
-import 'package:imagesio/screens/post/comment_section.dart';
-import 'package:imagesio/screens/post/edit-post.dart';
-import 'package:imagesio/screens/post/fullscreen_image.dart';
-import 'package:imagesio/services/post.dart';
+import 'package:Imagesio/models/author.dart';
+import 'package:Imagesio/models/comment.dart';
+import 'package:Imagesio/models/post.dart';
+import 'package:Imagesio/screens/post/comment_item.dart';
+import 'package:Imagesio/screens/post/comment_section.dart';
+import 'package:Imagesio/screens/post/edit-post.dart';
+import 'package:Imagesio/screens/post/fullscreen_image.dart';
+import 'package:Imagesio/services/post.dart';
 import 'package:provider/provider.dart';
 
 class PostPage extends StatefulWidget {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:imagesio/models/category.dart';
-import 'package:imagesio/services/post.dart';
-import 'package:imagesio/widgets/post_card.dart';
+import 'package:Imagesio/models/category.dart';
+import 'package:Imagesio/services/post.dart';
+import 'package:Imagesio/widgets/post_card.dart';
 
 class FollowingTab extends StatefulWidget {
   const FollowingTab({Key? key}) : super(key: key);

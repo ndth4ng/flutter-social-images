@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:imagesio/models/author.dart';
+import 'package:Imagesio/models/author.dart';
 
 class UserService {
   getUser(String userId) async {

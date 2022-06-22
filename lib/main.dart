@@ -1,26 +1,26 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:imagesio/firebase_options.dart';
-import 'package:imagesio/providers/screen_provider.dart';
-import 'package:imagesio/screens/auth/first_open.dart';
-import 'package:imagesio/screens/auth/login.dart';
-import 'package:imagesio/screens/auth/register.dart';
-import 'package:imagesio/screens/edit_profile.dart';
-import 'package:imagesio/screens/home/home_layout.dart';
-import 'package:imagesio/screens/home/splash_screen.dart';
-import 'package:imagesio/screens/post/add_post.dart';
-import 'package:imagesio/screens/post/comment_page.dart';
-import 'package:imagesio/screens/post/edit-post.dart';
-import 'package:imagesio/screens/post/post_page.dart';
-import 'package:imagesio/screens/profile_page.dart';
-import 'package:imagesio/screens/root.dart';
-import 'package:imagesio/screens/search_screen.dart';
-import 'package:imagesio/screens/user_profile.dart';
-import 'package:imagesio/services/auth.dart';
+import 'package:Imagesio/firebase_options.dart';
+import 'package:Imagesio/providers/screen_provider.dart';
+import 'package:Imagesio/screens/auth/first_open.dart';
+import 'package:Imagesio/screens/auth/login.dart';
+import 'package:Imagesio/screens/auth/register.dart';
+import 'package:Imagesio/screens/edit_profile.dart';
+import 'package:Imagesio/screens/home/home_layout.dart';
+import 'package:Imagesio/screens/home/splash_screen.dart';
+import 'package:Imagesio/screens/post/add_post.dart';
+import 'package:Imagesio/screens/post/comment_page.dart';
+import 'package:Imagesio/screens/post/edit-post.dart';
+import 'package:Imagesio/screens/post/post_page.dart';
+import 'package:Imagesio/screens/profile_page.dart';
+import 'package:Imagesio/screens/root.dart';
+import 'package:Imagesio/screens/search_screen.dart';
+import 'package:Imagesio/screens/user_profile.dart';
+import 'package:Imagesio/services/auth.dart';
 import 'package:provider/provider.dart';
 
-// import 'package:imagesio/services/auth.dart';
+// import 'package:Imagesio/services/auth.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blue,
             backgroundColor: const Color(0xFFFEFEFE),
-            fontFamily: 'Poppins',
+            fontFamily: 'Roboto',
           ),
           home: const SplashScreen(),
           routes: {

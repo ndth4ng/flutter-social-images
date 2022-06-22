@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:imagesio/models/comment.dart';
-import 'package:imagesio/screens/post/comment_item.dart';
+import 'package:Imagesio/models/comment.dart';
+import 'package:Imagesio/screens/post/comment_item.dart';
 
 class CommentPage extends StatelessWidget {
   static const routeName = 'comment';

@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:imagesio/services/post.dart';
-import 'package:imagesio/services/util.dart';
-import 'package:imagesio/shared/constants.dart';
-import 'package:imagesio/widgets/long_button.dart';
-import 'package:imagesio/widgets/prefix_icon.dart';
+import 'package:Imagesio/services/post.dart';
+import 'package:Imagesio/services/util.dart';
+import 'package:Imagesio/shared/constants.dart';
+import 'package:Imagesio/widgets/long_button.dart';
+import 'package:Imagesio/widgets/prefix_icon.dart';
 import 'package:provider/provider.dart';
 
 class EditPostPage extends StatefulWidget {

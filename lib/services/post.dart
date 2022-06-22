@@ -2,11 +2,11 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:imagesio/models/author.dart';
-import 'package:imagesio/models/category.dart';
-import 'package:imagesio/models/comment.dart';
-import 'package:imagesio/models/post.dart';
-import 'package:imagesio/services/util.dart';
+import 'package:Imagesio/models/author.dart';
+import 'package:Imagesio/models/category.dart';
+import 'package:Imagesio/models/comment.dart';
+import 'package:Imagesio/models/post.dart';
+import 'package:Imagesio/services/util.dart';
 
 class PostService with ChangeNotifier {
   CollectionReference postsRef = FirebaseFirestore.instance.collection('posts');

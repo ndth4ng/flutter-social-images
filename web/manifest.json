@@ -1,6 +1,6 @@
 {
-    "name": "imagesio",
-    "short_name": "imagesio",
+    "name": "Imagesio",
+    "short_name": "Imagesio",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

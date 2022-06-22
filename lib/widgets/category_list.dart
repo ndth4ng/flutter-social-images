@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:imagesio/models/category.dart';
+import 'package:Imagesio/models/category.dart';
 import 'package:provider/provider.dart';
 
 class CategoryList extends StatelessWidget {

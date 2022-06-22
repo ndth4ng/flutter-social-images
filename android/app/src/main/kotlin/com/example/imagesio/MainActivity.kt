@@ -1,4 +1,4 @@
-package com.example.imagesio
+package com.example.Imagesio
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:imagesio/services/auth.dart';
-import 'package:imagesio/shared/constants.dart';
-import 'package:imagesio/widgets/custom_divider.dart';
-import 'package:imagesio/widgets/long_button.dart';
-import 'package:imagesio/widgets/prefix_icon.dart';
+import 'package:Imagesio/services/auth.dart';
+import 'package:Imagesio/shared/constants.dart';
+import 'package:Imagesio/widgets/custom_divider.dart';
+import 'package:Imagesio/widgets/long_button.dart';
+import 'package:Imagesio/widgets/prefix_icon.dart';
 
 class RegisterPage extends StatefulWidget {
   static const routeName = '/register';
@@ -226,7 +226,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   const Text("Already have an account?"),
                   TextButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.pushReplacementNamed(context, '/login');
                     },
                     child: const Text(
                       "Login",

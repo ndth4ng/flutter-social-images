@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:imagesio/models/author.dart';
-import 'package:imagesio/models/reply.dart';
+import 'package:Imagesio/models/author.dart';
+import 'package:Imagesio/models/reply.dart';
 
 class Comment {
   final String id, content;

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:imagesio/services/post.dart';
-import 'package:imagesio/widgets/post_card.dart';
+import 'package:Imagesio/services/post.dart';
+import 'package:Imagesio/widgets/post_card.dart';
 
 class SearchScreen extends StatefulWidget {
   static const routeName = '/search';

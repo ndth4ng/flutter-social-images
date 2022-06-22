@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:imagesio/screens/auth/login.dart';
-import 'package:imagesio/screens/auth/register.dart';
-import 'package:imagesio/widgets/long_button.dart';
+import 'package:Imagesio/screens/auth/login.dart';
+import 'package:Imagesio/screens/auth/register.dart';
+import 'package:Imagesio/widgets/long_button.dart';
 
 class FirstOpen extends StatelessWidget {
   static const routeName = 'first';
@@ -72,7 +72,7 @@ class FirstOpen extends StatelessWidget {
                 ),
               ),
               const SizedBox(
-                height: 160.0,
+                height: 100.0,
               ),
               Center(
                 child: Column(
@@ -81,7 +81,7 @@ class FirstOpen extends StatelessWidget {
                         text: 'Create your account',
                         onPress: goToRegisterScreen),
                     const SizedBox(
-                      height: 16.0,
+                      height: 8.0,
                     ),
                     ElevatedButton(
                       onPressed: goToLoginScreen,

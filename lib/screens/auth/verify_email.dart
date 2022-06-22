@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:imagesio/screens/home/home_layout.dart';
-import 'package:imagesio/services/auth.dart';
-import 'package:imagesio/widgets/long_button.dart';
+import 'package:Imagesio/screens/home/home_layout.dart';
+import 'package:Imagesio/services/auth.dart';
+import 'package:Imagesio/widgets/long_button.dart';
 
 class VerifyEmailPage extends StatefulWidget {
   const VerifyEmailPage({Key? key}) : super(key: key);

@@ -1,10 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:imagesio/services/auth.dart';
-import 'package:imagesio/shared/constants.dart';
-import 'package:imagesio/widgets/custom_divider.dart';
-import 'package:imagesio/widgets/long_button.dart';
-import 'package:imagesio/widgets/prefix_icon.dart';
+import 'package:Imagesio/services/auth.dart';
+import 'package:Imagesio/shared/constants.dart';
+import 'package:Imagesio/widgets/custom_divider.dart';
+import 'package:Imagesio/widgets/long_button.dart';
+import 'package:Imagesio/widgets/prefix_icon.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
@@ -179,7 +179,7 @@ class _LoginPageState extends State<LoginPage> {
                   TextButton(
                     onPressed: () {
                       // widget.toggleView();
-                      Navigator.pushNamed(context, '/register');
+                      Navigator.pushReplacementNamed(context, '/register');
                     },
                     child: const Text(
                       "Register",
