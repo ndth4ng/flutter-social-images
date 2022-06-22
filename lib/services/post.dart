@@ -118,6 +118,14 @@ class PostService with ChangeNotifier {
     }
   }
 
+  deletePost(String postId) {
+    try {
+      FirebaseFirestore.instance.collection('posts').doc(postId).delete();
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
   void likePost(Post post, String uid) async {
     List<DocumentReference> postLikes = post.likes ?? [];
 

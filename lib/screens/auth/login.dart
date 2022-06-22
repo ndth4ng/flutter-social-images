@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:imagesio/services/auth.dart';
 import 'package:imagesio/shared/constants.dart';
 import 'package:imagesio/widgets/custom_divider.dart';
 import 'package:imagesio/widgets/long_button.dart';
 import 'package:imagesio/widgets/prefix_icon.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   static const routeName = '/login';
@@ -34,6 +36,8 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           );
+        } else {
+          Navigator.pop(context);
         }
       });
     }
@@ -51,8 +55,8 @@ class _LoginPageState extends State<LoginPage> {
               Row(
                 children: const [
                   Image(
-                    image: AssetImage('assets/logo.png'),
-                    height: 70.0,
+                    image: AssetImage('assets/images/logo.png'),
+                    height: 100.0,
                   ),
                 ],
               ),

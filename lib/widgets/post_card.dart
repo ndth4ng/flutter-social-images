@@ -83,7 +83,14 @@ class _PostCardState extends State<PostCard> {
             key: ValueKey(widget.post.id),
             child: CachedNetworkImage(
               imageUrl: widget.post.imageUrl,
-              placeholder: (context, url) => const CircularProgressIndicator(),
+              placeholder: (context, url) => AspectRatio(
+                aspectRatio: 2 / 1,
+                child: Container(
+                  width: double.infinity,
+                  alignment: Alignment.center,
+                  child: const CircularProgressIndicator(),
+                ),
+              ),
               errorWidget: (context, url, error) => const Icon(Icons.error),
             ),
             clipBehavior: Clip.antiAliasWithSaveLayer,

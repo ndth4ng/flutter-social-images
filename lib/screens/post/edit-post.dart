@@ -61,6 +61,13 @@ class _EditPostPageState extends State<EditPostPage> {
       }
     }
 
+    void handleDelete() {
+      PostService().deletePost(postId);
+      Navigator.of(context).popUntil(
+        (route) => route.isFirst,
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
@@ -68,6 +75,18 @@ class _EditPostPageState extends State<EditPostPage> {
         foregroundColor: Colors.blue,
         title: const Text('Edit Post'),
         centerTitle: true,
+        actions: [
+          TextButton(
+            onPressed: handleDelete,
+            child: const Text(
+              'Delete',
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 16.0,
+              ),
+            ),
+          )
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(

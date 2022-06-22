@@ -115,7 +115,9 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                   text: 'Resend Email',
                   onPress: canResendEmail ? sendVerificationEmail : () {}),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  sendVerificationEmail();
+                },
                 style: TextButton.styleFrom(
                     minimumSize: const Size.fromHeight(50.0)),
                 child: const Text(

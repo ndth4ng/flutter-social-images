@@ -6,13 +6,16 @@ import 'package:imagesio/providers/screen_provider.dart';
 import 'package:imagesio/screens/auth/first_open.dart';
 import 'package:imagesio/screens/auth/login.dart';
 import 'package:imagesio/screens/auth/register.dart';
+import 'package:imagesio/screens/edit_profile.dart';
 import 'package:imagesio/screens/home/home_layout.dart';
+import 'package:imagesio/screens/home/splash_screen.dart';
 import 'package:imagesio/screens/post/add_post.dart';
 import 'package:imagesio/screens/post/comment_page.dart';
 import 'package:imagesio/screens/post/edit-post.dart';
 import 'package:imagesio/screens/post/post_page.dart';
 import 'package:imagesio/screens/profile_page.dart';
 import 'package:imagesio/screens/root.dart';
+import 'package:imagesio/screens/search_screen.dart';
 import 'package:imagesio/screens/user_profile.dart';
 import 'package:imagesio/services/auth.dart';
 import 'package:provider/provider.dart';
@@ -52,7 +55,7 @@ class MyApp extends StatelessWidget {
             backgroundColor: const Color(0xFFFEFEFE),
             fontFamily: 'Poppins',
           ),
-          home: const Root(),
+          home: const SplashScreen(),
           routes: {
             // Root.routeName: (context) => const Root(),
             FirstOpen.routeName: (context) => const FirstOpen(),
@@ -64,6 +67,8 @@ class MyApp extends StatelessWidget {
             EditPostPage.routeName: (context) => const EditPostPage(),
             CommentPage.routeName: (context) => const CommentPage(),
             UserProfile.routeName: (context) => const UserProfile(),
+            EditProfile.routeName: (context) => const EditProfile(),
+            SearchScreen.routeName: (context) => const SearchScreen(),
           }),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:imagesio/models/author.dart';
 import 'package:imagesio/models/notification.dart';
 import 'package:imagesio/screens/post/post_page.dart';
@@ -41,7 +42,10 @@ class _NotificationPageState extends State<NotificationPage> {
 
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
-                child: CircularProgressIndicator(),
+                child: SpinKitThreeBounce(
+                  color: Colors.lightBlueAccent,
+                  size: 24.0,
+                ),
               );
             }
 

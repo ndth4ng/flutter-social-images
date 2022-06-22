@@ -40,7 +40,7 @@ class Util {
     }
   }
 
-  Future createImageUrl(File image) async {
+  Future<Map<String, String>> createImageUrl(File image) async {
     final cloudinary = CloudinaryPublic('ndth4ng', 'koy25upe', cache: false);
 
     try {
@@ -57,6 +57,7 @@ class Util {
     } on CloudinaryException catch (e) {
       print(e.message);
       print(e.request);
+      return {'imageUrl': '', 'imageId': ''};
     }
   }
 

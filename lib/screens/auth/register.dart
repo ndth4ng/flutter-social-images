@@ -54,14 +54,6 @@ class _RegisterPageState extends State<RegisterPage> {
             shrinkWrap: true,
             padding: const EdgeInsets.fromLTRB(32.0, 30.0, 32.0, 12.0),
             children: [
-              // Row(
-              //   children: const [
-              //     Image(
-              //       image: AssetImage('assets/logo.png'),
-              //       height: 70.0,
-              //     ),
-              //   ],
-              // ),
               const Text(
                 'Be a member of',
                 style: TextStyle(fontSize: 32.0, fontWeight: FontWeight.w100),
@@ -198,7 +190,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     width: 50,
                     height: 50,
                     child: const Image(
-                      image: AssetImage('assets/facebook-logo.png'),
+                      image: AssetImage('assets/images/facebook-logo.png'),
                     ),
                   ),
                   const SizedBox(
@@ -209,7 +201,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     width: 50,
                     height: 50,
                     child: const Image(
-                      image: AssetImage('assets/google-logo.png'),
+                      image: AssetImage('assets/images/google-logo.png'),
                     ),
                   ),
                   const SizedBox(
@@ -220,7 +212,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     width: 50,
                     height: 50,
                     child: const Image(
-                      image: AssetImage('assets/apple-logo.png'),
+                      image: AssetImage('assets/images/apple-logo.png'),
                     ),
                   )
                 ],

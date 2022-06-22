@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:imagesio/models/author.dart';
+import 'package:imagesio/services/util.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -78,5 +81,26 @@ class AuthService {
     }
 
     return false;
+  }
+
+  updateProfile(
+      File? avatar, String? displayName, String username, String? bio) async {
+    if (avatar != null) {
+      Map<String, String> imageInfo = await Util().createImageUrl(avatar);
+
+      FirebaseFirestore.instance.collection('users').doc(user?.uid).update({
+        'avatar': imageInfo['imageUrl'],
+        'imageId': imageInfo['imageId'],
+        'displayName': displayName,
+        'username': username,
+        'bio': bio,
+      });
+    } else {
+      FirebaseFirestore.instance.collection('users').doc(user?.uid).update({
+        'displayName': displayName,
+        'username': username,
+        'bio': bio,
+      });
+    }
   }
 }
