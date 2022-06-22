@@ -1,9 +1,15 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:imagesio/models/author.dart';
+import 'package:imagesio/screens/post/add_post.dart';
 import 'package:imagesio/screens/post/post_page.dart';
+import 'package:imagesio/services/auth.dart';
+import 'package:imagesio/services/util.dart';
 import 'package:imagesio/shared/constants.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +22,16 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  void handleAdd(ImageSource source) async {
+    File? image = await Util().getImage(source);
+
+    if (image != null) {
+      Navigator.pushNamed(context, AddPostPage.routeName, arguments: {
+        'image': image,
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     Author currentUser = Provider.of<Author>(context);
@@ -53,7 +69,69 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     const Spacer(),
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        showModalBottomSheet(
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(23),
+                              topLeft: Radius.circular(40),
+                            ),
+                          ),
+                          isScrollControlled: false, // chi co the keo xuong
+                          isDismissible:
+                              true, // co the keo xuong va an vao auto out
+                          backgroundColor: Colors.white,
+                          context: context,
+                          builder: (context) => Container(
+                            padding: const EdgeInsets.symmetric(vertical: 32.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    handleAdd(ImageSource.camera);
+                                  },
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    height: 40.0,
+                                    width: double.infinity,
+                                    color: Colors.grey[200],
+                                    child: const Text(
+                                      'Camera',
+                                      style: TextStyle(
+                                        // fontWeight: FontWeight.w400,
+                                        fontSize: 16.0,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 8.0,
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    handleAdd(ImageSource.gallery);
+                                  },
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    height: 40.0,
+                                    width: double.infinity,
+                                    color: Colors.grey[200],
+                                    child: const Text(
+                                      'Gallary',
+                                      style: TextStyle(
+                                        // fontWeight: FontWeight.w400,
+                                        fontSize: 16.0,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                       icon: const Icon(Icons.add_a_photo),
                     ),
                     IconButton(
@@ -70,75 +148,72 @@ class _ProfilePageState extends State<ProfilePage> {
                               true, // co the keo xuong va an vao auto out
                           backgroundColor: Colors.white,
                           context: context,
-                          builder: (context) => DraggableScrollableSheet(
-                            // initialChildSize: 0.4,
-                            // minChildSize: 0.2,
-                            // maxChildSize: 0.6,
-                            builder: (context, scrollController) {
-                              return SingleChildScrollView(
-                                controller: ModalScrollController.of(context),
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    const Text(
-                                      'Infomation',
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    const Text(
-                                      'Profile',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                      ),
-                                    ),
-                                    const Text(
-                                      'Edit Profile',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                      ),
-                                    ),
-                                    const Text(
-                                      'Support',
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    const Text(
-                                      'Get Support',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                      ),
-                                    ),
-                                    const Text(
-                                      'Security and privacy',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                      ),
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () {},
-                                      child: const Text('Message'),
-                                      style: ElevatedButton.styleFrom(
-                                        primary: Colors.blue,
-                                        onPrimary: Colors.black,
-                                        fixedSize: const Size(170, 35),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(36),
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      color: Colors.white,
-                                      height: 300,
-                                      width: 250,
-                                    ),
-                                  ],
+                          builder: (context) => Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 32.0),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text(
+                                  'Infomation',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
                                 ),
-                              );
-                            },
+                                const Text(
+                                  'Profile',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                  ),
+                                ),
+                                const Text(
+                                  'Edit Profile',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 32.0,
+                                ),
+                                const Text(
+                                  'Support',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                const Text(
+                                  'Get Support',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                  ),
+                                ),
+                                const Text(
+                                  'Security and privacy',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 32.0,
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    AuthService().signOut();
+                                  },
+                                  child: const Text('Log out'),
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Colors.blue,
+                                    onPrimary: Colors.black,
+                                    fixedSize: const Size(170, 35),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(36),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       },
